@@ -1,5 +1,27 @@
 Scripts for performing analysis of filesystems - audit usage and trends
 
+# Overview
+
+```
+bash 1_evaluate_fs.sh ~ | gzip > home.dat.gz
+```
+
+
+
+# Visualization notes
+
+Trying ggplot visualization in jupyter in vis.py.  Following along here: http://anujkatiyal.com/blog/2017/09/30/r-python/#.W7wyhRNKjOQ
+Also tried ggplot in vis.R
+
+Erik suggests Seaborn: https://seaborn.pydata.org/generated/seaborn.barplot.html
+
+# Development notes
+
+* TODO: output file should have real path of where it starts perhaps in comment
+* count number of files in directory and their cumulative sizes
+* treat .gz extension as special, and get the prior suffix, so distinguish between .vcf.gz and .fa.gz
+
+
 ## Relevant `stat` options
 
 From `man stat`
@@ -58,11 +80,4 @@ This exits with,
 ```
 -> the permission error was not fatal.  
 Results in 8923 entries
-
-# TODO: output file should have real path of where it starts perhaps in comment
-* count number of files in directory and their cumulative sizes
-* treat .gz extension as special, and get the prior suffix, so distinguish between .vcf.gz and .fa.gz
-
-o
-
 
