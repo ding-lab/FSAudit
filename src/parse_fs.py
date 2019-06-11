@@ -61,6 +61,9 @@ def main():
             filename = os.path.basename(file_name)
             dirname = os.path.dirname(file_name)
             base, ext = os.path.splitext(filename)
+            if ext == ".gz":
+                base, ext2 = os.path.splitext(base)
+                ext = ext2 + ext
         else:
             dirname = file_name
             filename = ""

@@ -1,7 +1,7 @@
 # Collect statistics about all files in all subdirectories of ROOT_DIR
 
 # USAGE
-# 1_evaluate_fs.sh ROOT_DIR 
+# evaluate_fs.sh ROOT_DIR 
 
 # OUTPUT - columns
 #       %n     file name
