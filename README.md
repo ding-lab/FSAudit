@@ -6,6 +6,9 @@ Scripts for performing analysis of filesystems - audit usage and trends
 bash 1_evaluate_fs.sh ~ | gzip > home.dat.gz
 ```
 
+# Learning with Seaborn
+
+https://elitedatascience.com/python-seaborn-tutorial#step-1
 
 
 # Visualization notes

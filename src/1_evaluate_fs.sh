@@ -21,6 +21,8 @@ fi
 
 >&2 echo Processing $ROOT_DIR
 cd $ROOT_DIR
+RDA=$(pwd -P)   # Absolute path
 
 printf "# file_name\tfile_type\ttotal_size\towner_name\ttime_mod\thard_links\n"
+printf "# ROOT_DIR $RDA\n"
 find . -exec stat --printf="%n\t%F\t%s\t%U\t%y\t%h\n" '{}' \;
