@@ -1,13 +1,12 @@
 # Given input data from 1_, select only the regular files and parse their names and extensions
 
-DAT="../dat/home.dat.gz"
-OUT="../dat/home-processed.dat.gz"
+DAT="/gscmnt/gc3020/dinglab/mwyczalk/gc2737.20190606.gz"
+OUT="dat/files.gc2737.dat.gz"
 
 if [[ ! -e $DAT ]]; then
 >&2 echo Error: $DAT does not exist
 exit 1
 fi
-
 
 
 ## file_name	file_type	total_size	owner_name	time_mod	hard_links
