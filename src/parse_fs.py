@@ -7,14 +7,13 @@
 # Assume input columns are:
 #   file_name file_type total_size owner_name time_mod hard_links
 #
-# For regular files (not directories, soft links, etc)
-#   extract 1) dirname, 2) filename, 3) extension.  Note that filename includes extension
-# Otherwise, write out original information
+# Retain only regular files. For these, extract
+#   1) dirname, 2) filename, 3) extension.  Note that filename includes extension
 #
 # Write the following columns:
 #   dirname, filename, ext, file_type, total_size, owner_name, time_mod, hard_links
 
-import sys, os;
+import sys, os, gzip
 
 def main():
     from optparse import OptionParser
@@ -23,25 +22,36 @@ def main():
         """
 
     parser = OptionParser(usage_text, version="$Revision: 1.2 $")
-    parser.add_option("-i", dest="infn", default="stdin", help="Input filename")
-    parser.add_option("-o", dest="outfn", default="stdout", help="Output filename")
+    parser.add_option("-i", dest="infn", default="stdin", help="Input filename.  Reads .gz")
+    parser.add_option("-o", dest="outfn", default="stdout", help="Output filename.  Can write .gz")
 
     (options, params) = parser.parse_args()
-
-#    if (len(params) != 3):
-#        parser.error("Pass 3 arguments.")
 
     if options.infn == "stdin":
         f = sys.stdin
     else:
-        f = open(options.infn, 'r')
+        base, ext = os.path.splitext(options.infn)
+        if ext == ".gz":
+            f = gzip.open(options.infn,'rt')
+        else:
+            f = open(options.infn, 'r')
+
     if options.outfn == "stdout":
         o = sys.stdout
     else:
-        o = open(options.outfn, "w")
+        base, ext = os.path.splitext(options.outfn)
+        if ext == ".gz":
+            o = gzip.open(options.outfn, 'wt')
+        else:
+            o = open(options.outfn, "w")
 
-    o.write('\t'.join( ("# dirname", "filename", "ext", "file_type", "total_size", "owner_name", "time_mod", "hard_links"))+"\n")
-    for line in f:
+# Make sure this works with input and output being either compressed or uncompressed
+# bytes vs. str: https://eli.thegreenplace.net/2012/01/30/the-bytesstr-dichotomy-in-python-3
+#    b = bytes(mystring, 'utf-8')
+    outstr='\t'.join( ("# dirname", "filename", "ext", "file_type", "total_size", "owner_name", "time_mod", "hard_links"))+"\n"
+    o.write(outstr)
+
+    for line in f.readlines():
 #     1  file_name 
 #     2  file_type
 #     3  total_size
@@ -51,25 +61,30 @@ def main():
 
         (file_name, file_type, total_size, owner_name, time_mod, hard_links) = line.rstrip().split("\t")
         # Skip headers
-        # TODO: preserve ROOT_DIR
         if file_name.startswith("#"): continue
 
         # Process only regular files
-        if file_type == "regular file": 
-            # From a complete file_name, extract 1) dirname, 2) filename, 3) extension.  Note that filename includes extension
-            dirname = os.path.dirname(file_name)
-            filename = os.path.basename(file_name)
-            dirname = os.path.dirname(file_name)
-            base, ext = os.path.splitext(filename)
-            if ext == ".gz":
-                base, ext2 = os.path.splitext(base)
-                ext = ext2 + ext
-        else:
-            dirname = file_name
-            filename = ""
-            ext = ""
+        if file_type != "regular file": 
+            continue
 
-        o.write('\t'.join( (dirname, filename, ext, file_type, total_size, owner_name, time_mod, hard_links))+"\n")
+        # From a complete file_name, extract 1) dirname, 2) filename, 3) extension.  Note that filename includes extension
+        dirname = os.path.dirname(file_name)
+        filename = os.path.basename(file_name)
+        dirname = os.path.dirname(file_name)
+        base, ext = os.path.splitext(filename)
+
+        # Try to make extensions meaningful:
+        #   * if ends in .gz, include the "upstream" extenstion (e.g., .tar.gz)
+        #   * If there is no extension, filename is extension (to capture e.g. "core")
+        if ext == ".gz":
+            base, ext2 = os.path.splitext(base)
+            ext = ext2 + ext
+        if ext == "":
+            ext = base 
+
+    
+        outstr = '\t'.join( (dirname, filename, ext, file_type, total_size, owner_name, time_mod, hard_links))+"\n"
+        o.write(outstr)
 
     f.close()
     o.close()
