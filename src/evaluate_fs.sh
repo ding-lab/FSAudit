@@ -82,7 +82,7 @@ function call_find_stat {
 #    RDA=$(pwd -P)   # Absolute path
     RDA=$(readlink -f $RD)
 
-    printf "# file_name\tfile_type\ttotal_size\towner_name\ttime_mod\thard_links\n"
+    printf "# file_name\tfile_type\tfile_size\towner_name\ttime_mod\thard_links\n"
 #    printf "# ROOT_DIR $RDA\n"
     find $RDA -exec stat --printf="%n\t%F\t%s\t%U\t%y\t%h\n" '{}' \;
 }

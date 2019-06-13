@@ -5,13 +5,13 @@
 # Washington University School of Medicine
 
 # Assume input columns are:
-#   file_name file_type total_size owner_name time_mod hard_links
+#   file_name file_type file_size owner_name time_mod hard_links
 #
 # Retain only regular files. For these, extract
 #   1) dirname, 2) filename, 3) extension.  Note that filename includes extension
 #
 # Write the following columns:
-#   dirname, filename, ext, file_type, total_size, owner_name, time_mod, hard_links
+#   dirname, filename, ext, file_type, file_size, owner_name, time_mod, hard_links
 
 import sys, os, gzip
 
@@ -48,18 +48,18 @@ def main():
 # Make sure this works with input and output being either compressed or uncompressed
 # bytes vs. str: https://eli.thegreenplace.net/2012/01/30/the-bytesstr-dichotomy-in-python-3
 #    b = bytes(mystring, 'utf-8')
-    outstr='\t'.join( ("# dirname", "filename", "ext", "file_type", "total_size", "owner_name", "time_mod", "hard_links"))+"\n"
+    outstr='\t'.join( ("# dirname", "filename", "ext", "file_type", "file_size", "owner_name", "time_mod", "hard_links"))+"\n"
     o.write(outstr)
 
     for line in f.readlines():
 #     1  file_name 
 #     2  file_type
-#     3  total_size
+#     3  file_size
 #     4  owner_name
 #     5  time_mod
 #     6  hard_links
 
-        (file_name, file_type, total_size, owner_name, time_mod, hard_links) = line.rstrip().split("\t")
+        (file_name, file_type, file_size, owner_name, time_mod, hard_links) = line.rstrip().split("\t")
         # Skip headers
         if file_name.startswith("#"): continue
 
@@ -83,7 +83,7 @@ def main():
             ext = base 
 
     
-        outstr = '\t'.join( (dirname, filename, ext, file_type, total_size, owner_name, time_mod, hard_links))+"\n"
+        outstr = '\t'.join( (dirname, filename, ext, file_type, file_size, owner_name, time_mod, hard_links))+"\n"
         o.write(outstr)
 
     f.close()
