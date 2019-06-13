@@ -24,10 +24,11 @@ From `man stat`
               like --format, but interpret backslash escapes, and do not output a mandatory trailing newline; if you want a newline, include \n in FORMAT
 
 What I want in order
+```
        %n     file name
        %F     file type
        %s     total size, in bytes
        %U     user name of owner
        %y     time of last modification, human-readable    
        %h     number of hard links
-
+```
