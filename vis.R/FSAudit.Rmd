@@ -3,6 +3,7 @@ title: "FSAudit"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -10,31 +11,37 @@ knitr::opts_chunk$set(echo = TRUE)
 Load the ggplot2 library
 ```{r}
 library(ggplot2)
-```
-```{r}
-#data.fn<-"/Users/mwyczalk/Projects/FSAudit/FSAudit/dat/gc2737.processed.100K.dat"
-data.fn<-"/Users/mwyczalk/Projects/FSAudit/FSAudit/dat/gc2737.processed.dat"
-FSA<-read.csv(data.fn, sep="\t")
-```
-```{r}
-FSA<-FSA[FSA$file_type=="regular file",]
-print(FSA)
-```
-```{r}
 library(plyr)
-#rFSA=ddply(FSA, c("ext","owner_name"), summarise, N=length(filename), tot_size=length(total_size))
-rFSA=ddply(FSA, c("ext","owner_name"), summarise,N=length(total_size),tot_size=sum(total_size))
-# get top 100 entries by size
 ```
 ```{r}
-rFSA100=head(arrange(rFSA,desc(tot_size)),n=250)
-rFSA100$tot_size_Tb = rFSA100$tot_size / 1000000000000
-print(head(rFSA100))
+data.fn<-"/Users/mwyczalk/Projects/FSAudit/FSAudit/dat/gc2737.20190612.summary.dat"
+rFSA<-read.csv(data.fn, sep="\t")
+rFSA$cumulative_size_Tb = rFSA$cumulative_size / (1024 * 1024 * 1024 * 1024)
+print(head(rFSA))
+```
+
+
+```{r}
+rFSA.size=head(arrange(rFSA,desc(cumulative_size_Tb)),n=250)
+
+p <- ggplot(data=rFSA.size)
+p <- p + geom_point(aes(x=ext, y=owner_name, size=cumulative_size_Tb)) + scale_size_area(name="Cumulative Size [Tb]")
+p <- p + ggtitle("/gscmnt/gc2737 - 6/12/2019 - File size") + ylab("Owner Name") + xlab("File Extension")
+p <- p + theme_bw()+ theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1), panel.grid.minor=element_blank(),
+           panel.grid.major=element_blank())
+p
+ggsave("/Users/mwyczalk/Projects/FSAudit/FSAudit/img/gc.2737.20190612.FileSize.pdf", width=18, height=5)
 ```
 
 ```{r}
-p <- ggplot(data=rFSA100)
-p <- p + geom_point(aes(x=ext, y=owner_name, size=tot_size_Tb)) + scale_size_area()
-p <- p + theme(axis.text.x  = element_text(angle=90, vjust=0.5, hjust=1))
+rFSA.count=head(arrange(rFSA,desc(count)),n=250)
+
+p <- ggplot(data=rFSA.count)
+p <- p + geom_point(aes(x=ext, y=owner_name, size=count)) + scale_size_area(name="File Count")
+p <- p + ggtitle("/gscmnt/gc2737 - 6/12/2019 - File count") + ylab("Owner Name") + xlab("File Extension")
+p <- p + theme_bw() + theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1), panel.grid.minor=element_blank(),
+           panel.grid.major=element_blank())
 p
+ggsave("/Users/mwyczalk/Projects/FSAudit/FSAudit/img/gc.2737.20190612.FileCount.pdf", width=18, height=5)
+
 ```
