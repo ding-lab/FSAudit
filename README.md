@@ -13,6 +13,7 @@ Finally, visualization is performed using `src/FSAudit.Rmd`.  The following plot
 ![](doc/gc.2737.20190612.FileCount.png)
 ![](doc/gc.2737.20190612.FileSize.png)
 
+Currently writing output to /gscmnt/gc3020/dinglab/mwyczalk
 
 # Background
 
@@ -32,3 +33,4 @@ What I want in order
        %y     time of last modification, human-readable    
        %h     number of hard links
 ```
+

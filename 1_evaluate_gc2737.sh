@@ -1,7 +1,7 @@
 # Analysis of /gscmnt/gc2737
 
 VOLUME="/gscmnt/gc2737/ding"
-OUT="/gscmnt/gc3020/dinglab/mwyczalk/gc2737.20190612.gz"  # call this ...rawstat.gz in the future
+OUT="/gscmnt/gc3020/dinglab/mwyczalk/gc2737.20190612.rawstat.gz"  
 LOGERR="logs/gc2737.err"
 LOGOUT="logs/gc2737.out"
 

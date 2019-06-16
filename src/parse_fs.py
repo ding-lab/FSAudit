@@ -29,12 +29,16 @@ def main():
 
     if options.infn == "stdin":
         f = sys.stdin
+        print("Reading stdin")
     else:
         base, ext = os.path.splitext(options.infn)
-        if ext == ".gz":
-            f = gzip.open(options.infn,'rt')
+        if ext == ".gz": 
+            print("Reading gz")
+#  Changing encoding to avoid UnicodeDecodeError: https://stackoverflow.com/questions/19699367/unicodedecodeerror-utf-8-codec-cant-decode-byte
+            f = gzip.open(options.infn, 'rt', encoding = "ISO-8859-1")   
         else:
-            f = open(options.infn, 'r')
+            print("Reading data")
+            f = open(options.infn, 'r', encoding='ISO-8859-1')
 
     if options.outfn == "stdout":
         o = sys.stdout

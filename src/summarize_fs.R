@@ -53,16 +53,29 @@ parse_args = function() {
 args = parse_args()
 
 # Read in tsv file and keep only regular file entries
+# we are interested only in the following columns:
+#   file_size, ext, owner_name
+# for large datasets we don't want to store unnecessary data
+# look at colClasses: https://stat.ethz.ch/R-manual/R-devel/library/utils/html/read.table.html
+#
+#  1 SKIP  # dirname
+#  2 SKIP  filename
+#  3 KEEP  ext
+#  4 SKIP  file_type
+#  5 KEEP  file_size
+#  6 KEEP  owner_name
+#  7 SKIP  time_mod
+#  8 SKIP  hard_links
+
+colClasses=c("NULL", "NULL", NA, "NULL", NA, NA, "NULL", "NULL")
+
 if (args$is.gz) {
-    FSA = read.csv(gzfile(args$in.fn), sep="\t");
+    FSA = read.csv(gzfile(args$in.fn), sep="\t", colClasses=colClasses);
 } else {
-    FSA = read.csv(args$in.fn, sep="\t");
+    FSA = read.csv(args$in.fn, sep="\t", colClasses=colClasses);
 }
 
-#FSA = FSA[FSA$file_type=="regular file",]
-
 rFSA=ddply(FSA, c("ext","owner_name"), summarise,count=length(file_size),cumulative_size=sum(file_size))
-#rFSA=head(arrange(rFSA,desc(tot_size_Tb)),n=args$topN)
 
 write.table(rFSA, args$out.fn, sep="\t", quote=FALSE, row.names=FALSE)
 cat(sprintf("    Saved to %s\n", args$out.fn))
