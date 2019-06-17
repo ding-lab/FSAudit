@@ -14,9 +14,10 @@ library(ggplot2)
 library(plyr)
 ```
 ```{r}
-data.fn<-"/Users/mwyczalk/Projects/FSAudit/FSAudit/dat/gc2737.20190612.summary.dat"
+data.fn<-"/Users/mwyczalk/Projects/FSAudit/FSAudit/dat/gc2737.20190615.summary.dat"
 rFSA<-read.csv(data.fn, sep="\t")
 rFSA$cumulative_size_Tb = rFSA$cumulative_size / (1024 * 1024 * 1024 * 1024)
+rFSA$ext_short = substring(rFSA$ext, first=1, last=16)   # Limit extension to first 16 characters for plotting
 print(head(rFSA))
 ```
 
@@ -25,23 +26,23 @@ print(head(rFSA))
 rFSA.size=head(arrange(rFSA,desc(cumulative_size_Tb)),n=250)
 
 p <- ggplot(data=rFSA.size)
-p <- p + geom_point(aes(x=ext, y=owner_name, size=cumulative_size_Tb)) + scale_size_area(name="Cumulative Size [Tb]")
-p <- p + ggtitle("/gscmnt/gc2737 - 6/12/2019 - File size") + ylab("Owner Name") + xlab("File Extension")
+p <- p + geom_point(aes(x=ext_short, y=owner_name, size=cumulative_size_Tb)) + scale_size_area(name="Cumulative Size [Tb]")
+p <- p + ggtitle("/gscmnt/gc2737 - 6/15/2019 - File size - Top 250") + ylab("Owner Name") + xlab("File Extension")
 p <- p + theme_bw()+ theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1), panel.grid.minor=element_blank(),
            panel.grid.major=element_blank())
 p
-ggsave("/Users/mwyczalk/Projects/FSAudit/FSAudit/img/gc.2737.20190612.FileSize.pdf", width=18, height=5)
+ggsave("/Users/mwyczalk/Projects/FSAudit/FSAudit/img/gc.2737.20190615.FileSize.pdf", width=18, height=6, useDingbats=FALSE)
 ```
 
 ```{r}
 rFSA.count=head(arrange(rFSA,desc(count)),n=250)
 
 p <- ggplot(data=rFSA.count)
-p <- p + geom_point(aes(x=ext, y=owner_name, size=count)) + scale_size_area(name="File Count")
-p <- p + ggtitle("/gscmnt/gc2737 - 6/12/2019 - File count") + ylab("Owner Name") + xlab("File Extension")
+p <- p + geom_point(aes(x=ext_short, y=owner_name, size=count)) + scale_size_area(name="File Count")
+p <- p + ggtitle("/gscmnt/gc2737 - 6/15/2019 - File count - Top 250") + ylab("Owner Name") + xlab("File Extension")
 p <- p + theme_bw() + theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1), panel.grid.minor=element_blank(),
            panel.grid.major=element_blank())
 p
-ggsave("/Users/mwyczalk/Projects/FSAudit/FSAudit/img/gc.2737.20190612.FileCount.pdf", width=18, height=5)
+ggsave("/Users/mwyczalk/Projects/FSAudit/FSAudit/img/gc.2737.20190615.FileCount.pdf", width=18, height=6, useDingbats=FALSE)
 
 ```
