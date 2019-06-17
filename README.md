@@ -15,6 +15,13 @@ Finally, visualization is performed using `src/FSAudit.Rmd`.  The following plot
 
 Currently writing output to /gscmnt/gc3020/dinglab/mwyczalk
 
+## Handy analysis
+
+Get details for given extension and user:
+```
+zcat /gscmnt/gc3020/dinglab/mwyczalk/gc2737.20190612.filestat.gz | awk -v FS="\t" '{if ($3 == ".chr20" && $6 == "rmashl") print}'
+```
+
 # Background
 
 ## Relevant `stat` options

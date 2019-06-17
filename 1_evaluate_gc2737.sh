@@ -1,9 +1,11 @@
 # Analysis of /gscmnt/gc2737
 
+TIMESTAMP="20190615"
+
 VOLUME="/gscmnt/gc2737/ding"
-OUT="/gscmnt/gc3020/dinglab/mwyczalk/gc2737.20190612.rawstat.gz"  
-LOGERR="logs/gc2737.err"
-LOGOUT="logs/gc2737.out"
+OUT="/gscmnt/gc3020/dinglab/mwyczalk/gc2737.${TIMESTAMP}.rawstat.gz"  
+LOGERR="logs/gc2737.${TIMESTAMP}.err"
+LOGOUT="logs/gc2737.${TIMESTAMP}.out"
 
 mkdir -p logs
 
