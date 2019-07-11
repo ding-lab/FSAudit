@@ -1,6 +1,4 @@
-TIMESTAMP="20190708"
-VOLNAME="cptac3_scratch" # short name
-DATD="/diskmnt/Projects/cptac_scratch/FSAudit/dat"
+source FSAudit.config
 
 DAT="$DATD/${VOLNAME}.${TIMESTAMP}.filestat.gz"  
 OUT="$DATD/${VOLNAME}.${TIMESTAMP}.summary.dat"  
