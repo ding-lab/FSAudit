@@ -67,7 +67,7 @@ args = parse_args()
 #  7 SKIP  time_mod
 #  8 SKIP  hard_links
 
-colClasses=c("NULL", "NULL", NA, "NULL", NA, NA, "NULL", "NULL")
+colClasses=c("NULL", "NULL", "character", "NULL", "numeric", "character", "NULL", "NULL")
 
 if (args$is.gz) {
     FSA = read.csv(gzfile(args$in.fn), sep="\t", colClasses=colClasses);

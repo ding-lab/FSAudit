@@ -40,4 +40,3 @@ What I want in order
        %y     time of last modification, human-readable    
        %h     number of hard links
 ```
-

@@ -63,7 +63,15 @@ def main():
 #     5  time_mod
 #     6  hard_links
 
-        (file_name, file_type, file_size, owner_name, time_mod, hard_links) = line.rstrip().split("\t")
+        try:
+            (file_name, file_type, file_size, owner_name, time_mod, hard_links) = line.rstrip().split("\t")
+        except ValueError as e:
+#        ValueError: not enough values to unpack (expected 6, got 1)
+#       This may happen if there are weird characters in filenames (e.g., "?") which make the printf in evaluate_fs.sh
+            print("ValueError {0} in ".format(e), options.infn," : ", line)
+            print("Skipping")
+            continue
+
         # Skip headers
         if file_name.startswith("#"): continue
 
