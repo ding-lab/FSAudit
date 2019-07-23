@@ -4,16 +4,19 @@ Scripts for performing analysis and visualization of filesystem usage
 
 Analysis currently consists of several scripts run to analyze a filesystem, followed by a visualization step which generates figures.
 
-* `1_evaluate_gc2737.sh` - initial call which obtains information about all files in a specified filesystem, writes `rawstat` file
+* Edit `FSAudit.config` to define variables used in analysis and plotting
+* `tmux new -s FSAudit` - Optional call to start `tmux`. This is useful because run is time consuming
+* If on MGI, `0_start_MGI_docker.sh`
+* `1_evaluate_volume.sh` - initial call which obtains information about all files in a specified filesystem, writes `rawstat` file
 * `2_process_stats.sh`   - Secondary analysis of above data, writes `filestat` file
 * `3_summarize_stats.sh` - Merge above data according to owner and extension, writes `summary` file
+* `4_plot_stats.sh` - generate visualization figures
 
-Finally, visualization is performed using `src/FSAudit.Rmd`.  The following plots are generated
-
+The following plots are generated
 ![](doc/gc.2737.20190612.FileCount.png)
 ![](doc/gc.2737.20190612.FileSize.png)
 
-Currently writing output to /gscmnt/gc3020/dinglab/mwyczalk
+All output is written to `./dat`, `./logs`, `./img`
 
 ## Handy analysis
 
