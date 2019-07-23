@@ -40,3 +40,6 @@ What I want in order
        %y     time of last modification, human-readable    
        %h     number of hard links
 ```
+## Installation
+
+This package requires python 3.  R packages which need to be installed: plyr, ggplot2
