@@ -69,11 +69,18 @@ args = parse_args()
 
 colClasses=c("NULL", "NULL", "character", "NULL", "numeric", "character", "NULL", "NULL")
 
+# If there is a malformed filename, script may choke.  To debug, first allow any value for the file_size field.  See DEBUG below
+# colClasses=c("NULL", "NULL", "character", "NULL", NA, "character", "NULL", "NULL")
+
 if (args$is.gz) {
     FSA = read.csv(gzfile(args$in.fn), sep="\t", colClasses=colClasses);
 } else {
     FSA = read.csv(args$in.fn, sep="\t", colClasses=colClasses);
 }
+
+# DEBUG:  Search for the malformed value as below
+# print(FSA[which(FSA$file_size == "scao"), ])
+# q()
 
 rFSA=ddply(FSA, c("ext","owner_name"), summarise,count=length(file_size),cumulative_size=sum(file_size))
 
