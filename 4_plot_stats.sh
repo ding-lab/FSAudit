@@ -4,7 +4,7 @@ DAT="$DATD/${VOLNAME}.${TIMESTAMP}.summary.dat"
 FS_PLOT="$IMGD/${VOLNAME}.${TIMESTAMP}.FileSize.pdf"
 FC_PLOT="$IMGD/${VOLNAME}.${TIMESTAMP}.FileCount.pdf"
 
-TITLE="${SYSTEM}:${VOLUME}"
+TITLE="${SYSNAME}:${VOLUME}"
 
 # -V vol_name: name of volume being processed, used for title
 # -D date: string representing date, used for title
