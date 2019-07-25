@@ -4,7 +4,12 @@ source FSAudit.config
 
 NOW=$(date)
 >&2 echo [ $NOW ] Running 1_evaluate_volume.sh
-bash ./1_evaluate_volume.sh
+if [[ "$SYSNAME" == "katmai" ]] || [[ "$SYSNAME" == "denali" ]]; then
+    >&2 echo Please enter sudo password
+    sudo bash ./1_evaluate_volume.sh
+else
+    bash ./1_evaluate_volume.sh
+fi
 test_exit_status
 
 NOW=$(date)
