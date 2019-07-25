@@ -1,2 +1,4 @@
 Check for errors upon exit
 Allow for automation of steps 1-4
+Step 2 may fail for very large systems with a bus error.  This appears to be due to memory, and seems to happen
+  when running on a blade.  Exiting to the login node, or running with larger memory, seems to resolve this
