@@ -2,6 +2,9 @@
 # Modeled after https://github.com/ding-lab/discover.CPTAC3.b1/blob/master/1_process_all.sh
 source FSAudit.config
 
+mkdir -p $LOGD
+mkdir -p $DATD
+
 NOW=$(date)
 >&2 echo [ $NOW ] Running 1_evaluate_volume.sh
 if [[ "$SYSNAME" == "katmai" ]] || [[ "$SYSNAME" == "denali" ]]; then
