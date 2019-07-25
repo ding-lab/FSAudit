@@ -13,3 +13,10 @@ mkdir -p $IMGD
 
 Rscript src/plot_FSAudit.R -L $TITLE -D $TIMESTAMP $DAT $FS_PLOT $FC_PLOT
 
+RLFS=$(readlink -f $FS_PLOT)
+RLFC=$(readlink -f $FC_PLOT)
+
+echo Final results
+echo $RLFS
+echo $RLFC
+
