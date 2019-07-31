@@ -1,4 +1,5 @@
-Check for errors upon exit
-Allow for automation of steps 1-4
 Step 2 may fail for very large systems with a bus error.  This appears to be due to memory, and seems to happen
   when running on a blade.  Exiting to the login node, or running with larger memory, seems to resolve this
+Explicitly write log name when reporting permission denied errors
+Write disk usage stats in title
+Directories should be consolidated so that can scan multiple disk volumes more easily (e.g., overnight run)
