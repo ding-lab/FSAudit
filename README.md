@@ -47,3 +47,11 @@ What I want in order
 ## Installation
 
 This package requires python 3.  R packages which need to be installed: plyr, ggplot2
+Also require GNU parallel
+
+### Debug
+
+This requires python 3.  Python 2 yields errors like this:
+```
+TypeError: open() got an unexpected keyword argument 'encoding'
+```
