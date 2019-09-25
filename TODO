@@ -16,3 +16,7 @@ then iterate over this file to analyze each directory in turn.  The BICSEQ2 scri
   this needs to be automated to pick out problem areas
 * In plot, order users in alphabetical order
 * All output of FSAudit_parallel.sh must go to file, so errors can be caught
+* test for existence of all relevant executibles when starting up: python3, parallel, Rscript
+    https://stackoverflow.com/questions/6141581/detect-python-version-in-shell-script
+* quickly find core files
+* Create disk space and file count figures with users on one axis, volumes on another.
