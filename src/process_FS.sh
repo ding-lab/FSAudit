@@ -36,6 +36,7 @@ EOF
 # Default values
 DATD="dat"
 LOGD="logs"
+PYTHON="python" # we don't provide a way to set this for now, rely on PATH
 TIMESTAMP=$(date +%Y%m%d)
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
@@ -91,6 +92,16 @@ if [ $STEP != "evaluate" ] && [ $STEP != "process" ] && [ $STEP != "summarize" ]
     exit 1
 fi
 
+# Confirm python version 3. From https://stackoverflow.com/questions/6141581/detect-python-version-in-shell-script
+PYTHON_MAJOR_VERSION=`$PYTHON -c 'import sys; version=sys.version_info[:3]; print("{0}".format(*version))'`
+if [ $PYTHON_MAJOR_VERSION != "3" ]; then
+    >&2 echo ERROR: Require python 3
+    PY=$(which $PYTHON)
+    >&2 echo $PY is version $PYTHON_MAJOR_VERSION
+    >&2 echo Quitting
+    exit 1
+fi
+
 if [ -z $VOLUME ]; then
     >&2 echo Volume name \(-V\) required
     exit 1
@@ -102,7 +113,6 @@ fi
 
 mkdir -p $LOGD
 mkdir -p $DATD
-
 
 function run_cmd {
     CMD=$1
@@ -139,29 +149,38 @@ function test_exit_status {
     rcs=${PIPESTATUS[*]};
     for rc in ${rcs}; do
         if [[ $rc != 0 ]]; then
-            >&2 echo Fatal error.  Exiting
+            >&2 echo Fatal ERROR.  Exiting
             exit $rc;
         fi;
     done
 }
 
+function evaluate_permission_denied {
+    LOGERR=$1
+    NERR=$(grep "Permission denied" $LOGERR | wc -l)
+    test_exit_status
+    if [[ "$NERR" != "0" ]]; then
+        >&2 echo NOTE: $NERR counts of \"Permission denied\" in error log
+    fi
+}
+
 function evaluate_volume {
+    OUT=$1
+
     NOW=$(date)
     >&2 echo [ $NOW ] Running step evaluate
-    OUT=$1
 
     LOGERR="$LOGD/${VOLNAME}.${TIMESTAMP}.evaluate_volume.err"
     LOGOUT="$LOGD/${VOLNAME}.${TIMESTAMP}.evaluate_volume.out"
 
-    >&2 echo Analyzing $VOLUME
-    >&2 echo Writing to $OUT
-    >&2 echo Logs to $LOGERR and $LOGOUT
-    CMD="bash src/evaluate_fs.sh $@ -o $OUT $VOLUME > $LOGOUT 2> $LOGERR"
+    >&2 echo "     Analyzing $VOLUME"
+    >&2 echo "     Writing to $OUT"
+    >&2 echo "     Logs to $LOGERR and $LOGOUT"
+    CMD="bash src/evaluate_fs.sh -o $OUT $VOLUME > $LOGOUT 2> $LOGERR"
     run_cmd "$CMD"
 
-    NERR=$(grep "Permission denied" $LOGERR | wc -l)
-    if [[ "$NERR" != "0" ]]; then
-        >&2 echo NOTE: $NERR counts of \"Permission denied\" in error log
+    if [ "$DRYRUN" != "d" ]; then
+        evaluate_permission_denied $LOGERR
     fi
 }
 
@@ -171,7 +190,7 @@ function process_stats {
     NOW=$(date)
     >&2 echo [ $NOW ] Running step process
 
-    CMD="python src/parse_fs.py -i $DAT  -o $OUT"
+    CMD="$PYTHON src/parse_fs.py -i $DAT  -o $OUT"
     run_cmd "$CMD"
 
     >&2 echo Written to $OUT
@@ -214,6 +233,10 @@ PRO="$DATD/${VOLNAME}.${TIMESTAMP}.filestat.gz"
 SUM="$DATD/${VOLNAME}.${TIMESTAMP}.summary.dat"  
 FS_PLOT="$DATD/${VOLNAME}.${TIMESTAMP}.FileSize.pdf"
 FC_PLOT="$DATD/${VOLNAME}.${TIMESTAMP}.FileCount.pdf"
+
+SIZE=$(df -h -B G $VOLUME)
+>&2 echo Filesystem stats:
+>&2 echo "$SIZE"
 
 if [ $STEP == "evaluate" ] || [ $STEP == "all" ]; then
     evaluate_volume $RAW

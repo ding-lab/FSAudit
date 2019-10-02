@@ -4,35 +4,34 @@
 # https://dinglab.wustl.edu/
 # Based on /gscuser/mwyczalk/projects/BICSEQ2/src/process_cases.sh
 
+
 read -r -d '' USAGE <<'EOF'
 
 Launch FSAudit workflow for multiple volumes.  
 
 Usage:
-  bash process_FS_parallel.sh -S VOLUME_LIST [options] STEP
+  bash process_FS_parallel.sh -I VOLUME_LIST [options] [VOLUME_NAME1 ...]
 
-Takes list of directory names and starts processing on each, calling `execute_workflow CASE`
-Reads CaseList to get details (BAM, etc.) for each volumes.  Essentially we call this for each volume
-in VOLUME_LIST:
+Takes list of volume names if provided, or processes all entries in VOLUME_LIST,
+calling for each volume in VOLUME_LIST:
 
-    process_FS.sh -V $VOLUME -N $VOLUME_NAME 
+    process_FS.sh -V $VOLUME -N $VOLUME_NAME1
 
 Required options:
--S VOLUME_LIST: details about volumes or directories to process
+-I VOLUME_LIST: details about volumes or directories to process
 
 Optional options
 -h: print usage information
 -d: dry run: print commands but do not run
     This may be repeated (e.g., -dd or -d -d) to pass the -d argument to called functions instead,
 -1 : stop after one volume processed.
+-S STEP : one of evaluate, process, summarize, plot, all, posteval.  Default is all.  See process_FS.sh for more details
 -T TIMESTAMP: Date in YYYYMMDD format (20190723), used for filenames.  Default is based on today's date
 -J PARALLEL_CASES: Specify number of volumes to run in parallel.  If PARALLEL_CASES is 0 (default), run volumes sequentially
 -t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dir
 -l LOGD: directory where runtime logs are written.  Default : ./logs
 
 Arguments:
-  STEP: one of evaluate, process, summarize, plot, all, posteval
-  see process_FS.sh for more details
 
 Submission modes:
 * parallel: launch a number of volume jobs simultaneously using `parallel`.  
@@ -58,10 +57,11 @@ SCRIPT_PATH=$(dirname $0)
 # Default values
 DATD="dat"
 LOGD="logs"
+STEP="all"
 TIMESTAMP=$(date +%Y%m%d)
 XARGS=""    # These are passed directly to process_FS.sh
 
-while getopts ":hd1J:S:t:l:" opt; do
+while getopts ":hd1J:I:t:l:S:T:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -79,7 +79,7 @@ while getopts ":hd1J:S:t:l:" opt; do
       NOW=$(date)
       MYID=$(date +%Y%m%d%H%M%S)
       ;;
-    S)
+    I)
       VOLUME_LIST=$OPTARG
       ;;
     t) 
@@ -89,6 +89,12 @@ while getopts ":hd1J:S:t:l:" opt; do
     l) 
       LOGD=$OPTARG
       XARGS="$XARGS -l $OPTARG"
+      ;;
+    S) 
+      STEP=$OPTARG
+      ;;
+    T) 
+      TIMESTAMP=$OPTARG
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -104,12 +110,11 @@ while getopts ":hd1J:S:t:l:" opt; do
 done
 shift $((OPTIND-1))
 
-if [ "$#" -ne 1 ]; then
-    >&2 echo Error: Wrong number of arguments
-    echo "$USAGE"
+if [ $STEP != "evaluate" ] && [ $STEP != "process" ] && [ $STEP != "summarize" ] && [ $STEP != "plot" ] && [ $STEP != "all" ] && [ $STEP != "posteval" ]; then
+    >&2 echo Unknown step : $STEP
+    >&2 echo "$USAGE"
     exit 1
 fi
-STEP=$1 # error checking will be handled by process_FS.sh
 
 # DRYRUN implementation here takes into account that we're calling `parallel process_FS.sh`
 # We want successive 'd' in DRYRUN to propagate to called functions as DRYARG_XXX
@@ -179,6 +184,20 @@ if [ -z $VOLUME_LIST ]; then
 fi
 confirm $VOLUME_LIST
 
+# this allows us to get volume names in one of three ways:
+# 1: process_FS_parallel.sh VN1 VN2 ...
+# 2: cat volume_names.txt | cq -
+# 3: process all volume names in VOLUME_LIST file
+# Note that if no cases defined, assume CASE='-'
+if [ "$#" == 0 ]; then
+    VNS=$(grep -v "^#" $VOLUME_LIST | cut -f 1 )
+elif [ "$1" == "-" ] ; then
+    VNS=$(cat - )
+else
+    VNS="$@"
+fi
+
+
 # If PARALLEL_CASES is defined, set this as the
 # number of jobs which can run at a time
 if [ -z $PARALLEL_CASES ] ; then
@@ -188,8 +207,6 @@ else
     PARALLEL_MODE=1
 fi
 
->&2 echo "Iterating over volumes in $VOLUME_LIST "
-
 if [ $PARALLEL_MODE ]; then
     LOGD="./logs"
     TMPD=$LOGD      # keep logs and tmp together.
@@ -197,14 +214,15 @@ if [ $PARALLEL_MODE ]; then
     test_exit_status
 fi
 
-# Loop over all remaining arguments
-while read LINE; do
+# Loop over all volume names, get volume path from VOLUME_LIST
+for VOLUME_NAME in $VNS; do
 
-    # Skip comments and header
-    [[ $LINE = \#* ]] && continue
+    if ! grep -F -q $VOLUME_NAME $VOLUME_LIST ; then
+        >&2 echo ERROR: $VOLUME_NAME not found in $VOLUME_LIST
+        exit 1
+    fi
 
-    VOLUME_NAME=$(echo "$LINE" | cut -f 1)
-    VOLUME=$(echo "$LINE" | cut -f 2)
+    VOLUME=$(grep $VOLUME_NAME $VOLUME_LIST | cut -f 2)
 
     # VOLUME must be an existing directory
     if [ ! -d $VOLUME ]; then
@@ -231,7 +249,7 @@ while read LINE; do
         break
     fi
 
-done < $VOLUME_LIST
+done 
 
 # this will wait until all jobs completed
 if [ $PARALLEL_MODE ] ; then

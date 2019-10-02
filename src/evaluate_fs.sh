@@ -77,7 +77,6 @@ function call_find_stat {
         exit 1
     fi
 
-    >&2 echo Processing $RD
 #    cd $RD
 #    RDA=$(pwd -P)   # Absolute path
     RDA=$(readlink -f $RD)
