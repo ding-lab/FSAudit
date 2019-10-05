@@ -11,6 +11,7 @@
 # -w width: plot width. Default 18
 # -L vol_name: name of volume being processed, used for title
 # -D date: string representing date, used for title
+# -g x.group: Quanitity on X axis, one of "volume", "ext" (default)
 
 library(ggplot2)
 library(plyr)
@@ -44,6 +45,7 @@ parse_args = function() {
     width = as.numeric(get_val_arg(args, "-w", 18))
     vol.name = get_val_arg(args, "-L", "volume")
     date = get_val_arg(args, "-D", "date")
+    x.group = get_val_arg(args, "-g", "ext")
 
     # mandatory positional arguments.  These are popped off the back of the array, last one listed first.
     plot.count.fn = args[length(args)]; args = args[-length(args)]
@@ -59,30 +61,49 @@ parse_args = function() {
 
 args = parse_args()
 
-# Script based on FSAudit.Rmd
+# TODO: 
+# * reverse order of owner_name so that first one alphabetically is on top
+# * Increase size of fonts, or at least allow them to be set as parameter
 
 rFSA<-read.csv(args$data.fn, sep="\t")
 rFSA$cumulative_size_Tb = rFSA$cumulative_size / (1024 * 1024 * 1024 * 1024)
 rFSA$ext_short = substring(rFSA$ext, first=1, last=16)   # Limit extension to first 16 characters for plotting
 
+# Plot FileSize
 rFSA.size=head(arrange(rFSA,desc(cumulative_size_Tb)),n=args$top.N)
 title_text = sprintf("%s - %s - File size - Top %d", args$vol.name, args$date, args$top.N)
 p <- ggplot(data=rFSA.size)
-p <- p + geom_point(aes(x=ext_short, y=owner_name, size=cumulative_size_Tb)) + scale_size_area(name="Cumulative Size [Tb]")
-p <- p + ggtitle(title_text) + ylab("Owner Name") + xlab("File Extension")
+
+if ( args$group.by == "ext" ) {
+    p <- p + geom_point(aes(x=ext_short, y=owner_name, size=cumulative_size_Tb)) 
+    xlabel="File Extension"
+} else if ( args$group.by == "volume" ) {
+    p <- p + geom_point(aes(x=volume, y=owner_name, size=cumulative_size_Tb)) 
+    xlabel="Volume Name"
+} else {
+    print("ERROR Permitted values of x.group are: ext, volume")
+    q()
+}
+p <- p + scale_size_area(name="Cumulative Size [Tb]")
+p <- p + ggtitle(title_text) + ylab("Owner Name") + xlab(xlabel)
 p <- p + theme_bw()+ theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1), panel.grid.minor=element_blank(),
            panel.grid.major=element_blank())
 cat(sprintf("Saved to %s\n", args$plot.size.fn))
 ggsave(args$plot.size.fn, height=args$height, width=args$width, useDingbats=FALSE)
 unlink("Rplots.pdf")
 
-
+# Plot FileCount
 rFSA.count=head(arrange(rFSA,desc(count)),n=args$top.N)
 title_text = sprintf("%s - %s - File count - Top %d", args$vol.name, args$date, args$top.N)
-
 p <- ggplot(data=rFSA.count)
-p <- p + geom_point(aes(x=ext_short, y=owner_name, size=count)) + scale_size_area(name="File Count")
-p <- p + ggtitle(title_text) + ylab("Owner Name") + xlab("File Extension")
+p <- p + geom_point(aes(x=ext_short, y=owner_name, size=count))
+if ( args$group.by == "ext" ) {
+    p <- p + geom_point(aes(x=ext_short, y=owner_name, size=count)) 
+} else { # implicitly, this has to be group.by = "volume" because this was already checked above
+    p <- p + geom_point(aes(x=volume, y=owner_name, size=count)) 
+} 
+p <- p + scale_size_area(name="Cumulative Size [Tb]")
+p <- p + ggtitle(title_text) + ylab("Owner Name") + xlab(xlabel)
 p <- p + theme_bw() + theme(axis.text.x = element_text(angle=90, vjust=0.5, hjust=1), panel.grid.minor=element_blank(),
            panel.grid.major=element_blank())
 

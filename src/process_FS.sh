@@ -202,7 +202,7 @@ function summarize_stats {
     NOW=$(date)
     >&2 echo [ $NOW ] Running step summarize 
     # May need to do `conda activate R
-    CMD="Rscript src/summarize_fs.R -Z $DAT $OUT"
+    CMD="Rscript src/summarize_fs.R -V $VOLNAME -Z $DAT $OUT"
     run_cmd "$CMD"
 }
 

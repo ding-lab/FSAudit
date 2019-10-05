@@ -186,7 +186,7 @@ confirm $VOLUME_LIST
 
 # this allows us to get volume names in one of three ways:
 # 1: process_FS_parallel.sh VN1 VN2 ...
-# 2: cat volume_names.txt | cq -
+# 2: cat volume_names.txt | process_FS_parallel.sh -
 # 3: process all volume names in VOLUME_LIST file
 # Note that if no cases defined, assume CASE='-'
 if [ "$#" == 0 ]; then
