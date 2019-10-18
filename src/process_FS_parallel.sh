@@ -28,7 +28,7 @@ Optional options
 -S STEP : one of evaluate, process, summarize, plot, all, posteval.  Default is all.  See process_FS.sh for more details
 -T TIMESTAMP: Date in YYYYMMDD format (20190723), used for filenames.  Default is based on today's date
 -J PARALLEL_CASES: Specify number of volumes to run in parallel.  If PARALLEL_CASES is 0 (default), run volumes sequentially
--t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dir
+-t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dat
 -l LOGD: directory where runtime logs are written.  Default : ./logs
 
 Arguments:
@@ -222,10 +222,10 @@ for VOLUME_NAME in $VNS; do
         exit 1
     fi
 
-    VOLUME=$(grep $VOLUME_NAME $VOLUME_LIST | cut -f 2)
+	VOLUME=$(awk -v vol=$VOLUME_NAME '{if ($1 == vol) print $2}' $VOLUME_LIST)
 
     # VOLUME must be an existing directory
-    if [ ! -d $VOLUME ]; then
+    if [ ! -d "$VOLUME" ]; then
         >&2 echo ERROR: Volume does not exist: $VOLUME
         exit 1
     fi
