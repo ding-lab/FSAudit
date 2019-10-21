@@ -48,7 +48,7 @@ parse_args = function() {
     verbose = get_bool_arg(args, "-v")
     topN = as.numeric(get_val_arg(args, "-N", 250))
     is.gz = get_bool_arg(args, "-Z")
-    group.by = get_val_arg(args, "-g", "owner_extension")
+    group.by = get_val_arg(args, "-g", "ext-owner_name")
     bad.fs = get_val_arg(args, "-D", NULL)
 
     # mandatory positional arguments.  These are popped off the back of the array, last one listed first.
