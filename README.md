@@ -52,14 +52,9 @@ On MGI, use conda environment `p3R`.  [Conda cheat sheet](https://docs.conda.io/
 
 `conda activate p3R`
 
-* Edit `FSAudit.config` to define variables used in analysis and plotting
-* `tmux new -s FSAudit` - Optional call to start `tmux`. This is useful because run is time consuming
-* If on MGI, `0_start_MGI_docker.sh`
-* `sudo 1_evaluate_volume.sh` - initial call which obtains information about all files in a specified filesystem, writes `rawstat` file
-    * the `sudo` is optional and may not be available, but provides more complete information for cases where data is not accessible as user
-* `2_process_stats.sh`   - Secondary analysis of above data, writes `filestat` file
-* `3_summarize_stats.sh` - Merge above data according to owner and extension, writes `summary` file
-* `4_plot_stats.sh` - generate visualization figures
+## Output
+
+Confirm this...
 
 The following plots are generated
 ![](doc/gc.2737.20190612.FileCount.png)
