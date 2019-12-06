@@ -21,7 +21,7 @@ This can be managed with [Conda](https://docs.conda.io/projects/conda/en/4.6.0/_
 
 ## VolumeList
 
-The VolumeList file contains the following two fields for every volume to be audited, tab-separated:
+The VolumeList file (default `config/VolumeList.dat`) contains the following two fields for every volume to be audited, tab-separated:
 * `VOLUME_NAME`: Short name of system and volume, used for filenames 
 * `VOLUME`: This is the base path we are analyzing 
 
@@ -31,7 +31,6 @@ MGI.gc2500  /gscmnt/gc2500/dinglab
 MGI.gc2508  /gscmnt/gc2508/dinglab
 MGI.gc2509  /gscmnt/gc2509/dinglab
 ```
-
 
 ## Run notes
 
