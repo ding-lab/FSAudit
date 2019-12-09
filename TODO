@@ -9,6 +9,7 @@ TODO:
 * In plot, order users in alphabetical order
 * All output of FSAudit_parallel.sh must go to file, so errors can be caught
 * quickly find core files
+* separate out logs and output data by timestamp
 
 
 To do for development: test functionality of `src/summarize_fs.R` by calling
