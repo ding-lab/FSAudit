@@ -19,3 +19,5 @@ directly via `Rscript`.  In particular,
 
 Another issue is how to have links to the latest data, timestamp notwithstanding
 
+Output directory should be dat/TIMESTAMP or dat/PROJECT, to structure the output directory a bit more
+nicely during multiple runs

@@ -28,7 +28,7 @@ Optional options
 -S STEP : one of evaluate, process, summarize, plot, all, posteval.  Default is all.  See process_FS.sh for more details
 -T TIMESTAMP: Date in YYYYMMDD format (20190723), used for filenames.  Default is based on today's date
 -J PARALLEL_CASES: Specify number of volumes to run in parallel.  If PARALLEL_CASES is 0 (default), run volumes sequentially
--t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dat
+-t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dat/TIMESTAMP
 -l LOGD: directory where runtime logs are written.  Default : ./logs
 
 Arguments:
@@ -55,10 +55,10 @@ SCRIPT=$(basename $0)
 SCRIPT_PATH=$(dirname $0)
 
 # Default values
-DATD="dat"
+TIMESTAMP=$(date +%Y%m%d)
+DATD="dat/$TIMESTAMP"
 LOGD="logs"
 STEP="all"
-TIMESTAMP=$(date +%Y%m%d)
 XARGS=""    # These are passed directly to process_FS.sh
 
 while getopts ":hd1J:I:t:l:S:T:" opt; do
