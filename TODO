@@ -21,3 +21,9 @@ Another issue is how to have links to the latest data, timestamp notwithstanding
 
 Output directory should be dat/TIMESTAMP or dat/PROJECT, to structure the output directory a bit more
 nicely during multiple runs
+
+# Summer 2020
+
+* replace docker call with WUDocker call
+* provide mechanisms to discover uncompressed SomaticWrapper runs.  These may include specific Pindel output
+  files (_SI, etc)
