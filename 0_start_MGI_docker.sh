@@ -1,3 +1,6 @@
 # Run this only on MGI to start new docker instance
 
-/gscmnt/gc2560/core/env/v1/bin/gsub -m 16
+source docker/docker_image.sh
+
+bash WUDocker/start_docker.sh -M MGI -m 16 -I $IMAGE
+
