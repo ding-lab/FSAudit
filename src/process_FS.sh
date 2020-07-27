@@ -15,7 +15,7 @@ Options:
 -V VOLUME: This is the base path we are analyzing (/gscmnt/gc2737/ding).  Required
 -T TIMESTAMP: Date, typically in YYYYMMDD format, used for output filenames.  Default is based on today's date
 -N VOLNAME: Short name of system and volume, used for filenames (MGI.gc2737).  Required
--t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dir
+-t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dat
 -l LOGD: directory where runtime logs are written.  Default : ./logs
 
 Arguments:

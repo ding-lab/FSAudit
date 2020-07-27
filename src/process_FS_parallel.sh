@@ -15,7 +15,7 @@ Usage:
 Takes list of volume names if provided, or processes all entries in VOLUME_LIST,
 calling for each volume in VOLUME_LIST:
 
-    process_FS.sh -V $VOLUME -N $VOLUME_NAME1
+    process_FS_parallel.sh -V $VOLUME -N $VOLUME_NAME1
 
 Required options:
 -I VOLUME_LIST: details about volumes or directories to process
@@ -29,7 +29,7 @@ Optional options
 -T TIMESTAMP: Date in YYYYMMDD format (20190723), used for filenames.  Default is based on today's date
 -J PARALLEL_CASES: Specify number of volumes to run in parallel.  If PARALLEL_CASES is 0 (default), run volumes sequentially
 -t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dat/TIMESTAMP
--l LOGD: directory where runtime logs are written.  Default : ./logs
+-l LOGD: directory where runtime logs are written.  Default : ./logs/TIMESTAMP
 
 Arguments:
 
@@ -57,7 +57,7 @@ SCRIPT_PATH=$(dirname $0)
 # Default values
 TIMESTAMP=$(date +%Y%m%d)
 DATD="dat/$TIMESTAMP"
-LOGD="logs"
+LOGD="logs/$TIMESTAMP"
 STEP="all"
 XARGS=""    # These are passed directly to process_FS.sh
 
@@ -84,11 +84,9 @@ while getopts ":hd1J:I:t:l:S:T:" opt; do
       ;;
     t) 
       DATD=$OPTARG
-      XARGS="$XARGS -t $OPTARG"
       ;;
     l) 
       LOGD=$OPTARG
-      XARGS="$XARGS -l $OPTARG"
       ;;
     S) 
       STEP=$OPTARG
@@ -171,7 +169,7 @@ function get_launch_cmd {
     VOLUME_NAME=$2
     TIMESTAMP=$3
 
-    ARGS="$XARGS $DRYARG_WORKFLOW -V $VOLUME -T $TIMESTAMP -N $VOLUME_NAME"
+    ARGS="$XARGS $DRYARG_WORKFLOW -V $VOLUME -T $TIMESTAMP -N $VOLUME_NAME -t $DATD -l $LOGD"
 
     CMD="bash src/process_FS.sh $ARGS $STEP"
 
@@ -207,12 +205,12 @@ else
     PARALLEL_MODE=1
 fi
 
-if [ $PARALLEL_MODE ]; then
-    LOGD="./logs"
-    TMPD=$LOGD      # keep logs and tmp together.
-    mkdir -p $LOGD
-    test_exit_status
-fi
+#if [ $PARALLEL_MODE ]; then
+#    LOGD="./logs/$TIMESTAMP"
+#    TMPD=$LOGD      # keep logs and tmp together.
+#    mkdir -p $LOGD
+#    test_exit_status
+#fi
 
 # Loop over all volume names, get volume path from VOLUME_LIST
 for VOLUME_NAME in $VNS; do
@@ -240,7 +238,7 @@ for VOLUME_NAME in $VNS; do
 
         JOBLOG="$LOGD/${VOLUME_NAME}.${TIMESTAMP}.process_FS.log"
         CMD=$(echo "$CMD" | sed 's/"/\\"/g' )   # This will escape the quotes in $CMD 
-        CMD="parallel --semaphore -j$PARALLEL_CASES --id $MYID --joblog $JOBLOG --tmpdir $TMPD \"$CMD\" "
+        CMD="parallel --semaphore -j$PARALLEL_CASES --id $MYID --joblog $JOBLOG --tmpdir $LOGD \"$CMD\" "
     fi
 
     run_cmd "$CMD"

@@ -2,5 +2,5 @@
 
 source docker/docker_image.sh
 
-bash WUDocker/start_docker.sh -M MGI -m 16 -I $IMAGE
+bash docker/WUDocker/start_docker.sh -M MGI -m 16 -I $IMAGE
 
