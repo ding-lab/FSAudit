@@ -32,6 +32,19 @@ MGI.gc2508  /gscmnt/gc2508/dinglab
 MGI.gc2509  /gscmnt/gc2509/dinglab
 ```
 
+## Output files
+
+```
+*.rawstat.gz
+# file_name     file_type       file_size       owner_name      time_mod        hard_links
+
+*.filestat.gz
+# dirname       filename        ext     file_type       file_size       owner_name      time_mod        hard_links
+
+*.summary.dat
+ext owner_name  count   cumulative_size
+```
+
 ## Run notes
 
 1. Create `config/VolumeList.dat`
