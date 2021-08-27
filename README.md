@@ -55,3 +55,32 @@ This requires python 3.  Python 2 yields errors like this:
 ```
 TypeError: open() got an unexpected keyword argument 'encoding'
 ```
+
+# Development
+
+Example column values
+
+## MGI.gc2500.20210825.rawstat.gz
+```
+     1	# file_name	/gscmnt/gc2500/dinglab/in/CTSP/1bcb893f-206f-467f-93f0-69f7b33dcc8f/9b7b7b0a-3d2c-4137-9f49-5ccfbdb90c64_wxs_gdc_realn.bam
+     2	file_type	regular file
+     3	file_size	35926511484
+     4	owner_name	rmashl
+     5	time_mod	2021-05-10 21:00:45.000000000 +0000
+     6	hard_links	1
+```
+
+## MGI.gc2500.20210825.filestat.gz
+```
+     1	# dirname	/gscmnt/gc2500/dinglab/in/CTSP/a3abf5b6-126a-4cb9-83d9-4300207c5bf2
+     2	filename	2bbb943a-ab5c-48bb-a1a0-7c41db0812cc_wxs_gdc_realn.bam
+     3	ext	.bam
+     4	file_type	regular file
+     5	file_size	38327962760
+     6	owner_name	rmashl
+     7	time_mod	2021-05-10 18:46:15.000000000 +0000
+     8	hard_links	1
+```
+TODO: add "volume_name" label to filestat.gz as given in VolumeList.dat
+
+

@@ -11,7 +11,7 @@
 #   1) dirname, 2) filename, 3) extension.  Note that filename includes extension
 #
 # Write the following columns:
-#   dirname, filename, ext, file_type, file_size, owner_name, time_mod, hard_links
+#   volume_name, timestamp, dirname, filename, ext, file_type, file_size, owner_name, time_mod, hard_links
 
 import sys, os, gzip
 
@@ -24,6 +24,8 @@ def main():
     parser = OptionParser(usage_text, version="$Revision: 1.2 $")
     parser.add_option("-i", dest="infn", default="stdin", help="Input filename.  Reads .gz")
     parser.add_option("-o", dest="outfn", default="stdout", help="Output filename.  Can write .gz")
+    parser.add_option("-V", dest="volume_name", default="VOLUME", help="Volume name.  Written verbatim to first column")
+    parser.add_option("-T", dest="timestamp", default="TIMESTAMP", help="Timestamp string.  Written verbatim to second column")
 
     (options, params) = parser.parse_args()
 
@@ -52,7 +54,7 @@ def main():
 # Make sure this works with input and output being either compressed or uncompressed
 # bytes vs. str: https://eli.thegreenplace.net/2012/01/30/the-bytesstr-dichotomy-in-python-3
 #    b = bytes(mystring, 'utf-8')
-    outstr='\t'.join( ("# dirname", "filename", "ext", "file_type", "file_size", "owner_name", "time_mod", "hard_links"))+"\n"
+    outstr='\t'.join( ("# volume_name", "timestamp", "dirname", "filename", "ext", "file_type", "file_size", "owner_name", "time_mod", "hard_links"))+"\n"
     o.write(outstr)
 
     for line in f.readlines():
@@ -94,8 +96,7 @@ def main():
         if ext == "":
             ext = base 
 
-    
-        outstr = '\t'.join( (dirname, filename, ext, file_type, file_size, owner_name, time_mod, hard_links))+"\n"
+        outstr = '\t'.join( (options.volume_name, options.timestamp, dirname, filename, ext, file_type, file_size, owner_name, time_mod, hard_links))+"\n"
         o.write(outstr)
 
     f.close()
