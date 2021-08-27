@@ -25,10 +25,10 @@ Optional options
 -d: dry run: print commands but do not run
     This may be repeated (e.g., -dd or -d -d) to pass the -d argument to called functions instead,
 -1 : stop after one volume processed.
--S STEP : one of evaluate, process, summarize, plot, all, posteval.  Default is all.  See process_FS.sh for more details
+-S STEP : one of evaluate, process, all.  Default is all.  See process_FS.sh for more details
 -T TIMESTAMP: Date in YYYYMMDD format (20190723), used for filenames.  Default is based on today's date
 -J PARALLEL_CASES: Specify number of volumes to run in parallel.  If PARALLEL_CASES is 0 (default), run volumes sequentially
--t DATD: directory where analysis data (raw, filestat, summary, plots) is written.  Default : ./dir
+-t DATD: directory where analysis data (raw, filestat, summary) is written.  Default : ./dir
 -l LOGD: directory where runtime logs are written.  Default : ./logs
 
 Arguments:

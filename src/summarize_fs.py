@@ -22,7 +22,7 @@ def get_df(filename):
     base, ext = os.path.splitext(filename)
     if ext == ".gz": 
         print("Reading gz")
-        read_args={**read_args, 'compression': 'gzip'}
+        read_args={'compression': 'gzip'}
 
 #  1 KEEP  # volume_name
 #  1 KEEP  # timestamp
