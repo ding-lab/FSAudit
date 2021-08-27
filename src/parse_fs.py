@@ -54,7 +54,7 @@ def main():
 # Make sure this works with input and output being either compressed or uncompressed
 # bytes vs. str: https://eli.thegreenplace.net/2012/01/30/the-bytesstr-dichotomy-in-python-3
 #    b = bytes(mystring, 'utf-8')
-    outstr='\t'.join( ("# volume_name", "timestamp", "dirname", "filename", "ext", "file_type", "file_size", "owner_name", "time_mod", "hard_links"))+"\n"
+    outstr='\t'.join( ("volume_name", "timestamp", "dirname", "filename", "ext", "file_type", "file_size", "owner_name", "time_mod", "hard_links"))+"\n"
     o.write(outstr)
 
     for line in f.readlines():

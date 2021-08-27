@@ -1,11 +1,17 @@
-mkdir -p test
-DAT="../dat/20210512.partial/MGI.gc2500.20210825.rawstat.gz"
-OUT="test/MGI.gc2500.20210825.filestat.gz"
-
-VOLUME_NAME="gc2500"
 TIMESTAMP="20210825"
 
-#CMD="python src/parse_fs.py $@ -i $DAT -o $OUT -V $VOLUME_NAME -T $TIMESTAMP"
-CMD="python src/parse_fs.py $@ -i $DAT -o $OUT "
-echo Running $CMD
-eval $CMD
+function process {
+    VOLUME_NAME=$1
+    DAT="../dat/20210512.partial/MGI.$VOLUME_NAME.$TIMESTAMP.rawstat.gz"
+    OUT="test/$VOLUME_NAME.$TIMESTAMP.filestat.gz"
+
+    CMD="python src/parse_fs.py $@ -i $DAT -o $OUT -V $VOLUME_NAME -T $TIMESTAMP"
+    echo Running $CMD
+    eval $CMD
+}
+
+
+mkdir -p test
+process gc2500
+process gc2508
+process gc2509
