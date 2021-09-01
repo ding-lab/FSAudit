@@ -112,7 +112,7 @@ def update_count(volume_name, slider_range):
     return fig2
 
 if __name__ == '__main__':
-# this is for running dash
+# this is for running dash on katmai
     app.run_server(debug=True,port=8080,host='0.0.0.0')
   #  app.run_server(debug=True)
 #    main()
