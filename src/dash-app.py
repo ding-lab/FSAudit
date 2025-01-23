@@ -79,11 +79,11 @@ app.layout = html.Div([
         value='oe',
         labelStyle={'display': 'inline-block'}
     ),
-    dcc.Dropdown(
+    dcc.Checklist(
         id='group_select',
         options=get_volume_names_list(df),
         value=df["volume_name"].unique(),
-        multi=True,   
+        labelStyle={'display': 'inline-block'}
     ),
     html.Div(id="display_label"),
     dcc.Graph(
