@@ -35,7 +35,7 @@ EOF
 # Default values
 DATD="dat"
 LOGD="logs"
-PYTHON="python" # we don't provide a way to set this for now, rely on PATH
+PYTHON="python3" # we don't provide a way to set this for now, rely on PATH
 TIMESTAMP=$(date +%Y%m%d)
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial

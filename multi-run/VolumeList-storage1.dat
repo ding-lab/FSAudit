@@ -1,5 +1,4 @@
 #  * VOLUME_NAME: Short name of system and volume, used for filenames (MGI.gc2737)
 #  * VOLUME: This is the base path we are analyzing (/gscmnt/gc2737/ding)
-MGI.gc2500	/gscmnt/gc2500/dinglab
-MGI.gc2508	/gscmnt/gc2508/dinglab
-MGI.gc2509	/gscmnt/gc2509/dinglab
+dinglab	/storage1/fs1/dinglab/Active
+m.wyczalkowski	/storage1/fs1/m.wyczalkowski/Active

@@ -1,3 +1,9 @@
+# running FSAudit on compute1
+
+
+
+# Old notes for MGI
+
 Goal is to execute FSAudit on all MGI disks using `parallel`
 Parallel implementation based on that here: /gscuser/mwyczalk/projects/BICSEQ2/src/process_cases.sh
 

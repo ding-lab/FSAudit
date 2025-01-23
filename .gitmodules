@@ -1,0 +1,3 @@
+[submodule "WUDocker"]
+	path = WUDocker
+	url = https://github.com/ding-lab/WUDocker.git
