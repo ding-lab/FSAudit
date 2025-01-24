@@ -1,7 +1,7 @@
 APP="src/dash-app.py"
 
-# Shiso
-INPUT="/Users/mwyczalk/Projects/FSAudit/FSAudit.v2/dat/20210825/summary-20210825.dat"
+# Paprika
+INPUT="/Users/m.wyczalkowski/Projects/FSAudit/FSAudit.v2/FSAudit/dat/summary-20250121.dat"
 MODE="localhost"
 #MODE="main"
 
