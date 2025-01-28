@@ -14,7 +14,9 @@
 
 import sys, os, gzip
 import pandas as pd
-pd.options.mode.copy_on_write = True
+import datetime
+
+#pd.options.mode.copy_on_write = True
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -39,16 +41,15 @@ def main():
 
     (options, params) = parser.parse_args()
 
+    eprint("Reading %s" % options.infn)
     # This is a complete list of all entries in raw FSAudit file
     all_data = pd.read_csv(options.infn, sep="\t", usecols=[0,1,2])
+    eprint("Done.")
 
     # file_data has path and size of all regular files
     file_data = all_data.loc[ all_data['file_type'] == 'regular file' ].drop(columns="file_type")
     file_data['depth'] = file_data['file_name'].apply(lambda x: x.count('/'))
     eprint("max file depth = %d" % file_data['depth'].max())
-#    tmp="dat/files-out.tmp"
-#    eprint("writing files to " + tmp)
-#    file_data.to_csv(tmp, index=False, sep="\t")
 
     # dirs is a list of all directories
     dirs = all_data.loc[ all_data['file_type'] == 'directory' ].drop(columns=["file_type", "file_size"]).rename(columns={'file_name': 'dir_name'})
@@ -61,6 +62,10 @@ def main():
     # M is L+1, One level deeper
     # The size of a directory at a given level is the sum of matching subdirs at level M and matching files at level M
 
+#First time around:
+#columns alldirs: ['dir_name', 'dir_size', 'depth']
+#columns dirsL: ['dir_name', 'depth', 'dir_size']
+
     dirsM = pd.DataFrame(columns=["dir_name", "dir_size", "depth"]) # this lists all dirs at L+1.  Starts off empty
     alldirs = pd.DataFrame(columns=["dir_name", "dir_size", "depth"]) 
 
@@ -68,15 +73,20 @@ def main():
     for L in reversed(range(1,maxL+1)):
         dirsL=dirs.loc[dirs['depth'] == L]
         filesM=file_data.loc[file_data['depth'] == L+1]
-        eprint("L = %d" % L)
-#        eprint(dirsL)
+
+        eprint("[%s]: tree depth = %d: %d files" % (datetime.datetime.now(), L, len(dirsL.index) ))
         dirsL['dir_size'] = dirsL['dir_name'].apply(lambda x: get_subdir_size(x, dirsM, filesM))
-#        eprint(dirsL)
+
+# the above yields:
+#src/make_dir_map.py:83: SettingWithCopyWarning:
+#A value is trying to be set on a copy of a slice from a DataFrame.
+#Try using .loc[row_indexer,col_indexer] = value instead
+#
+#See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+#  dirsL['dir_size'] = dirsL['dir_name'].apply(lambda x: get_subdir_size(x, dirsM, filesM))
 
         dirsM=dirsL
-        alldirs = pd.concat([alldirs, dirsL])
-
-#    dirs['dir_size'] = dirs['dir_name'].apply(lambda x: get_subdir_size(x, file_data))
+        alldirs = pd.concat([alldirs, dirsL], sort=True)
 
     alldirs.to_csv(options.outfn, index=False, sep="\t")
     eprint("writtent to " + options.outfn)
@@ -86,9 +96,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-#/Users/m.wyczalkowski/Projects/FSAudit/FSAudit.v2/FSAudit/src/make_dir_map.py:72: SettingWithCopyWarning:
-#A value is trying to be set on a copy of a slice from a DataFrame.
-#Try using .loc[row_indexer,col_indexer] = value instead
 

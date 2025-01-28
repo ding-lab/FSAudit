@@ -7,7 +7,7 @@ BIN="WUDocker/start_docker.sh"
 # IMAGE="python:3.12-slim-bookworm"
 IMAGE="mwyczalkowski/python3-util:20250123"
 
-VOLS=""
+VOLS="/home/m.wyczalkowski /storage1/fs1/m.wyczalkowski/Active/ProjectStorage"
 
 
 bash $BIN -r -M compute1 -I $IMAGE $VOLS

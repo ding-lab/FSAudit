@@ -77,12 +77,9 @@ function call_find_stat {
         exit 1
     fi
 
-#    cd $RD
-#    RDA=$(pwd -P)   # Absolute path
     RDA=$(readlink -f $RD)
 
-    printf "# file_name\tfile_type\tfile_size\towner_name\ttime_mod\thard_links\n"
-#    printf "# ROOT_DIR $RDA\n"
+    printf "file_name\tfile_type\tfile_size\towner_name\ttime_mod\thard_links\n"
 
 #   -xdev  Don't descend directories on other filesystems.
     find $RDA -xdev -exec stat --printf="%n\t%F\t%s\t%U\t%y\t%h\n" '{}' \;
