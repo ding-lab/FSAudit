@@ -10,7 +10,8 @@ import sys, os, gzip
 import datetime
 
 # https://anytree.readthedocs.io/en/stable/intro.html
-from anytree import Node, RenderTree, Resolver, Walker
+#from anytree import Node, RenderTree, Resolver, Walker
+import anytree
 
 
 def eprint(*args, **kwargs):
@@ -26,7 +27,7 @@ def add_dir_to_tree(dirpath, root):
                 nd = c
                 break
         if nd is None:
-            nd = Node(d, parent=parent, dirsize=0)
+            nd = anytree.Node(d, parent=parent, dirsize=0)
         parent = nd            
 
 def add_file_to_tree(filepath, filesize, root, resolver, walker):
@@ -57,8 +58,8 @@ def make_dirtree(fn, rootNode):
 #     4	owner_name	m.wyczalkowski
 #     5	time_mod	2023-02-01 18:11:47.000000000 -0600
 def parse_files(fn, rootNode):
-    resolver = Resolver()
-    walker = Walker()
+    resolver = anytree.Resolver()
+    walker = anytree.Walker()
     with gzip.open(fn, mode='rt') as filelist:
         for i, line in enumerate(filelist):
 #            eprint("Line %d: %s" % (i, line))
@@ -67,6 +68,25 @@ def parse_files(fn, rootNode):
             filesize = int(tok[1])
             # Possibly add filtering here by owner or time
             add_file_to_tree(filepath, filesize, rootNode, resolver, walker)
+
+def write_dirtree(fn, rootNode):
+
+    with open(fn,"w") as f:
+        for i, n in enumerate(anytree.LevelOrderIter(rootNode)):
+            # node.path is known from code; https://github.com/c0fec0de/anytree/blob/65a5d09ce0a592a80918f094ec3fa48b7faca250/anytree/node/node.py#L82C1-L83C1
+            # https://anytree.readthedocs.io/en/stable/api/anytree.node.html#anytree.node.nodemixin.NodeMixin.path
+            p = "/".join([""] + [str(nn.name) for nn in n.path])
+#            eprint("%s\t%d" % (p, n.dirsize))
+            f.write("%s\t%d\n" % (p, n.dirsize))
+
+
+#    with open("users.txt","a") as f:
+#        f.write(username)
+
+
+#    for pre, fill, node in anytree.RenderTree(rootNode):
+#        eprint("pre: %s, fill: %s, node: %s" % (pre, fill, node))
+
 
 
 def main():
@@ -82,13 +102,17 @@ def main():
 
     (options, params) = parser.parse_args()
 
+#        eprint("[%s]: tree depth = %d: %d files" % (datetime.datetime.now(), L, len(dirsL.index) ))
     # not clear how to do this with no assumptions about root dir
-    rootNode = Node("rdcw", dirsize=0)
-    eprint("Making dirlist from %s" % options.dirlist)
+    rootNode = anytree.Node("rdcw", dirsize=0)
+    eprint("[%s] Making dirlist from %s" % (datetime.datetime.now(), options.dirlist))
     make_dirtree(options.dirlist, rootNode)
 
-    eprint("Parsing files in %s" % options.filelist)
+    eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), options.filelist))
     parse_files(options.filelist, rootNode)
+
+    eprint("[%s] Writing to %s" % (datetime.datetime.now(), options.outfn))
+    write_dirtree(options.outfn, rootNode)
 
 #TODO: allow this to write out [dirname, dirsize]
 
