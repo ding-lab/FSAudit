@@ -63,14 +63,27 @@ def parse_files(fn, rootNode):
     with gzip.open(fn, mode='rt') as filelist:
         for i, line in enumerate(filelist):
 #            eprint("Line %d: %s" % (i, line))
-            tok = line.split("\t")
-            filepath = tok[0]# .lstrip("/")
-            filesize = int(tok[1])
-            # Possibly add filtering here by owner or time
-            add_file_to_tree(filepath, filesize, rootNode, resolver, walker)
+            try:
+                tok = line.split("\t")
+                filepath = tok[0]# .lstrip("/")
+                filesize = int(tok[1])
+                # Possibly add filtering here by owner or time
+                add_file_to_tree(filepath, filesize, rootNode, resolver, walker)
+            except:
+                eprint("Error caught in %s line %d\n\t%s\nContinuing" % (fn, i, line))
+
+# https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
+def convert_size(size_bytes):
+   if size_bytes == 0:
+       return "0B"
+   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+   i = int(math.floor(math.log(size_bytes, 1024)))
+   p = math.pow(1024, i)
+   s = round(size_bytes / p, 2)
+   return "%s %s" % (s, size_name[i])
+
 
 def write_dirtree(fn, rootNode):
-
     with open(fn,"w") as f:
         for i, n in enumerate(anytree.LevelOrderIter(rootNode)):
             # node.path is known from code; https://github.com/c0fec0de/anytree/blob/65a5d09ce0a592a80918f094ec3fa48b7faca250/anytree/node/node.py#L82C1-L83C1
@@ -78,16 +91,6 @@ def write_dirtree(fn, rootNode):
             p = "/".join([""] + [str(nn.name) for nn in n.path])
 #            eprint("%s\t%d" % (p, n.dirsize))
             f.write("%s\t%d\n" % (p, n.dirsize))
-
-
-#    with open("users.txt","a") as f:
-#        f.write(username)
-
-
-#    for pre, fill, node in anytree.RenderTree(rootNode):
-#        eprint("pre: %s, fill: %s, node: %s" % (pre, fill, node))
-
-
 
 def main():
     from optparse import OptionParser
