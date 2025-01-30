@@ -5,7 +5,7 @@ BIN="WUDocker/start_docker.sh"
 
 # https://biocontainers.pro/tools/python3-biopython
 # IMAGE="python:3.12-slim-bookworm"
-IMAGE="mwyczalkowski/python3-util:20250123"
+IMAGE="mwyczalkowski/python3-util:20250130"
 
 VOLS="/home/m.wyczalkowski /storage1/fs1/m.wyczalkowski/Active/ProjectStorage"
 

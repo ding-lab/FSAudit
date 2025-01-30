@@ -6,7 +6,7 @@
 # version 2 implementation builds an internal directory tree structure then loops over all files
 
 import sys, os, gzip
-import pandas as pd
+#import pandas as pd
 import datetime
 
 # https://anytree.readthedocs.io/en/stable/intro.html
@@ -84,11 +84,14 @@ def main():
 
     # not clear how to do this with no assumptions about root dir
     rootNode = Node("rdcw", dirsize=0)
+    eprint("Making dirlist from %s" % options.dirlist)
     make_dirtree(options.dirlist, rootNode)
 
+    eprint("Parsing files in %s" % options.filelist)
     parse_files(options.filelist, rootNode)
 
-    eprint(RenderTree(rootNode))
+#TODO: allow this to write out [dirname, dirsize]
+
 
 if __name__ == '__main__':
     main()
