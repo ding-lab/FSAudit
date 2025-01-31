@@ -5,9 +5,8 @@
 # We will write all directories and their size, calculated as the size of all files under them
 # version 2 implementation builds an internal directory tree structure then loops over all files
 
-import sys, os, gzip
+import sys, os, gzip, math, datetime
 #import pandas as pd
-import datetime
 
 # https://anytree.readthedocs.io/en/stable/intro.html
 #from anytree import Node, RenderTree, Resolver, Walker
@@ -73,24 +72,26 @@ def parse_files(fn, rootNode):
                 eprint("Error caught in %s line %d\n\t%s\nContinuing" % (fn, i, line))
 
 # https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
-def convert_size(size_bytes):
+def convert_size(size_bytes, ndigits=2):
    if size_bytes == 0:
        return "0B"
    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
    i = int(math.floor(math.log(size_bytes, 1024)))
    p = math.pow(1024, i)
-   s = round(size_bytes / p, 2)
+   s = round(size_bytes / p, ndigits)  # None for int
    return "%s %s" % (s, size_name[i])
 
 
+# We want to write out all directories along with their sizes.  Also, we write out a new directory tree where each directory name
+# is replaced by that name with directory size appended, e.g. "/foo/bar" becomes "/foo 46MB/bar 256KB".  This is intended for visualization purposes
 def write_dirtree(fn, rootNode):
     with open(fn,"w") as f:
         for i, n in enumerate(anytree.LevelOrderIter(rootNode)):
-            # node.path is known from code; https://github.com/c0fec0de/anytree/blob/65a5d09ce0a592a80918f094ec3fa48b7faca250/anytree/node/node.py#L82C1-L83C1
             # https://anytree.readthedocs.io/en/stable/api/anytree.node.html#anytree.node.nodemixin.NodeMixin.path
             p = "/".join([""] + [str(nn.name) for nn in n.path])
-#            eprint("%s\t%d" % (p, n.dirsize))
-            f.write("%s\t%d\n" % (p, n.dirsize))
+            vp = "/".join([""] + ["%s %s" % (str(nn.name), convert_size(nn.dirsize, None)) for nn in n.path])
+            #eprint("vp = %s" % vp)
+            f.write("%s\t%d\t%s\n" % (p, n.dirsize, vp))
 
 def main():
     from optparse import OptionParser
