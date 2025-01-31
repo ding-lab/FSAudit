@@ -85,12 +85,14 @@ def convert_size(size_bytes, ndigits=2):
 # We want to write out all directories along with their sizes.  Also, we write out a new directory tree where each directory name
 # is replaced by that name with directory size appended, e.g. "/foo/bar" becomes "/foo 46MB/bar 256KB".  This is intended for visualization purposes
 def write_dirtree(fn, rootNode):
-    with open(fn,"w") as f:
+    eprint("[%s] Writing COMPRESSED to %s" % (datetime.datetime.now(), fn))
+#    with open(fn,"w") as f:            # this for text file output
+    with gzip.open(fn, "wt") as f:    # this for gzip file output
         for i, n in enumerate(anytree.LevelOrderIter(rootNode)):
             # https://anytree.readthedocs.io/en/stable/api/anytree.node.html#anytree.node.nodemixin.NodeMixin.path
             p = "/".join([""] + [str(nn.name) for nn in n.path])
             vp = "/".join([""] + ["%s %s" % (str(nn.name), convert_size(nn.dirsize, None)) for nn in n.path])
-            #eprint("vp = %s" % vp)
+#            eprint("p = %s vp = %s" % (p,vp))
             f.write("%s\t%d\t%s\n" % (p, n.dirsize, vp))
 
 def main():
@@ -115,7 +117,6 @@ def main():
     eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), options.filelist))
     parse_files(options.filelist, rootNode)
 
-    eprint("[%s] Writing to %s" % (datetime.datetime.now(), options.outfn))
     write_dirtree(options.outfn, rootNode)
 
 #TODO: allow this to write out [dirname, dirsize]
