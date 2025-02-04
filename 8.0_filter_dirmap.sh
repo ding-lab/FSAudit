@@ -2,6 +2,20 @@
 # retain only directories above a given size
 # Write out data ready for input into dirtree
 
+
+function filter_dirmap_10G {
+    DAT=$1
+    OUT=$1
+
+    LIM=10 000 000 000 # 10G
+    CAT="gzcat"
+    GZIP="gzip"
+    COL="3"
+
+#    $CAT $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | cut -f 3 |  grep -vf $X | $GZIP > $OUT
+    $CAT $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | cut -f 3 |  $GZIP > $OUT
+}
+
 #DATASET="1000dev"
 #DATASET="mw"  # full m.wyczalkowski dataset
 #DATASET="dinglab"  # full dinglab dataset
@@ -36,17 +50,11 @@ elif [[ $DATASET == "dinglab" ]]; then
     COL="3"
 elif [[ $DATASET == "dinglab-mwycz" ]]; then
 #    # complete m.wyczalkowski dataset
-    DAT="dat/dinglab.20250121/dinglab.20250121.dirmap3-songcao.tsv.gz"
-    OUT="dat/dinglab.20250121/dinglab.20250121.dirmap3-songcao-10G.tsv.gz"
-    X="dat/none.dat"
-    LIM=10000000000 # 100G
-    CAT="gzcat"
-    GZIP="gzip"
-    COL="3"
 fi
 
-$CAT $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | cut -f 3 |  grep -vf $X | $GZIP > $OUT
 
+DAT="dat/dinglab.20250121/dinglab.20250121.dirmap3-songcao.tsv.gz"
+OUT="dat/dinglab.20250121/dinglab.20250121.dirmap3-songcao-10G.tsv.gz"
 #gzcat $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | wc -l
 
 >&2 echo Written to $OUT
