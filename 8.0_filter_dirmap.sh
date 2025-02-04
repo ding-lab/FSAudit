@@ -4,7 +4,8 @@
 
 #DATASET="1000dev"
 #DATASET="mw"  # full m.wyczalkowski dataset
-DATASET="dinglab"  # full dinglab dataset
+#DATASET="dinglab"  # full dinglab dataset
+DATASET="dinglab-mwycz"  # full dinglab dataset
 
 
 if [[ "$DATASET" == "1000dev" ]]; then
@@ -31,6 +32,15 @@ elif [[ $DATASET == "dinglab" ]]; then
     X="dat/none.dat"
     LIM=100000000000 # 100G
     CAT="zcat"
+    GZIP="gzip"
+    COL="3"
+elif [[ $DATASET == "dinglab-mwycz" ]]; then
+#    # complete m.wyczalkowski dataset
+    DAT="dat/dinglab.20250121/dinglab.20250121.dirmap3-songcao.tsv.gz"
+    OUT="dat/dinglab.20250121/dinglab.20250121.dirmap3-songcao-10G.tsv.gz"
+    X="dat/none.dat"
+    LIM=10000000000 # 100G
+    CAT="gzcat"
     GZIP="gzip"
     COL="3"
 fi

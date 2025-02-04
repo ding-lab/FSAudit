@@ -1,28 +1,8 @@
-#DATA="1000dev"
-DAT="mw"  # full m.wyczalkowski dataset
+U="songcao"
+DAT="dat/dinglab.20250121/dinglab.20250121.dirmap3-$U-10G.tsv.gz"
+OUT="dat/dinglab.20250121/dinglab.20250121.dirmap3-$U-10G.html"
+#OUT="html/dinglab.20250121.dirtree-100G.html"
 
-
-#if [[ "$DATA" == "1000dev" ]]; 
-#echo x
-    # 1000 dev data
-#    DAT="dat/m.wyczalkowski.1000.dirmap2.tsv"
-#    OUT="html/test-1000.html"
-#    X="dat/none.dat"
-#    LIM=0
-#    CAT="cat"
-#    COL="3"     # this is the one with size labels
-##elif [[ $DATA == "mw" ]]; 
-#    # real data
-    DAT="dat/m.wyczalkowski.20250121.dirmap3.tsv.gz"
-    OUT="html/m.wyczalkowski.20250121.html"
-    X="dat/exclude.dat"
-    LIM=1000000000 # 1G
-    CAT="gzcat"
-    COL="3"
-#fi
-
-$CAT $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | cut -f 3 |  grep -vf $X | dirtree -o $OUT
-
-#gzcat $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | wc -l
+gzcat $DAT |  dirtree -o $OUT
 
 >&2 echo Written to $OUT
