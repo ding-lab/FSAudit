@@ -7,9 +7,10 @@
 #FILELIST="dat/m.wyczalkowski.20250121.filelist.tsv.gz"
 #OUT="dat/m.wyczalkowski.20250121.dirmap3.tsv"
 
-DIRLIST="dat/dinglab.20250121.dirlist.tsv.gz"
-FILELIST="dat/dinglab.20250121.filelist.tsv.gz"
-OUT="dat/dinglab.20250121.dirmap3.tsv.gz"
+P="dinglab.20250121"
+DIRLIST="dat/$P/dirlist.tsv.gz"
+FILELIST="dat/$P/$P.filelist.tsv.gz"
+OUT="dat/$P/$P.dirmap3.tsv.gz"
 
 #ERR="logs/make_dirmap2.err"
 #>&2 echo Writing logs to $ERR
