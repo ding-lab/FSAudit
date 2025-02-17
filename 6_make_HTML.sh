@@ -19,7 +19,7 @@ make_dirtree $DAT $HTML
 
 
 FILTER_LABEL="10G"
-ULIST="dat/dinglab.20250121/dinglab.20250121.ownerlist.tsv"
+ULIST="dat/$P/$P.ownerlist.tsv"
 
 while read L; do
 
