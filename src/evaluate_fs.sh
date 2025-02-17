@@ -69,6 +69,11 @@ fi
 #       %U     user name of owner
 #       %y     time of last modification, human-readable     
 #       %h     number of hard links
+
+# YES   %w     time of file birth, human-readable; - if unknown
+# YES   %x     time of last access, human-readable
+# NO    %y     time of last data modification, human-readable
+# NO    %z     time of last status change, human-readable
 function call_find_stat {
     RD=$1
 
