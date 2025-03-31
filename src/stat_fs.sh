@@ -7,7 +7,7 @@ read -r -d '' USAGE <<'EOF'
 Obtain details on all files in filesystem and write raw stat report
 
 Usage:
-  evaluate_fs.sh [options] ROOT_DIR 
+  stat_fs.sh [options] ROOT_DIR 
 
 Options:
 -h: Print this help message
@@ -56,7 +56,7 @@ shift $((OPTIND-1))
 
 if [ "$#" -ne 1 ]; then
     >&2 echo Error: Wrong number of arguments
-    >&2 echo Usage: evaluate_fs.sh ROOT_DIR 
+    >&2 echo Usage: stat_fs.sh ROOT_DIR 
     exit 1
 fi
 
@@ -67,13 +67,11 @@ fi
 #       %F     file type
 #       %s     total size, in bytes
 #       %U     user name of owner
-#       %y     time of last modification, human-readable     
+#       %w     time of file birth, human-readable [time_birth]
+#       %x     time of last access, human-readable [time_access]
+#       %y     time of last data modification, human-readable [time_mod]
 #       %h     number of hard links
 
-# YES   %w     time of file birth, human-readable; - if unknown
-# YES   %x     time of last access, human-readable
-# NO    %y     time of last data modification, human-readable
-# NO    %z     time of last status change, human-readable
 function call_find_stat {
     RD=$1
 
@@ -84,10 +82,10 @@ function call_find_stat {
 
     RDA=$(readlink -f $RD)
 
-    printf "file_name\tfile_type\tfile_size\towner_name\ttime_mod\thard_links\n"
+    printf "file_name\tfile_type\tfile_size\towner_name\ttime_birth\ttime_access\ttime_mod\thard_links\n"
 
 #   -xdev  Don't descend directories on other filesystems.
-    find $RDA -xdev -exec stat --printf="%n\t%F\t%s\t%U\t%y\t%h\n" '{}' \;
+    find $RDA -xdev -exec stat --printf="%n\t%F\t%s\t%U\t%w\t%s\t%y\t%h\n" '{}' \;
 }
 
 ROOT_DIR=$1
