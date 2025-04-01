@@ -85,7 +85,7 @@ function call_find_stat {
     printf "file_name\tfile_type\tfile_size\towner_name\ttime_birth\ttime_access\ttime_mod\thard_links\n"
 
 #   -xdev  Don't descend directories on other filesystems.
-    find $RDA -xdev -exec stat --printf="%n\t%F\t%s\t%U\t%w\t%s\t%y\t%h\n" '{}' \;
+    find $RDA -xdev -exec stat --printf="%n\t%F\t%s\t%U\t%w\t%x\t%y\t%h\n" '{}' \;
 }
 
 ROOT_DIR=$1

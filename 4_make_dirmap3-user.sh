@@ -1,17 +1,20 @@
+VOL_NAME="m.wyczalkowski"
+DATESTAMP="20250331"
+OUTD_BASE="/scratch1/fs1/dinglab/m.wyczalkowski/FSAudit/dat"
 
-# dev
-#P="head1M"
-#P="dinglab.head20K"
-P="dinglab.20250210"
+RUN_NAME="$VOL_NAME.$DATESTAMP"
+OUTD="$OUTD_BASE/$RUN_NAME"
 
-DIRLIST="dat/$P/$P.dirlist.tsv.gz"
-FILELIST="dat/$P/$P.filelist.tsv.gz"
 
-# this also writes out dat/$P/dinglab.$P.dirmap3-USER.tsv.gz files
-OUTD="dat/$P/dirmap"
-mkdir -p $OUTD
-OUT="$OUTD/$P.dirmap3.tsv.gz"
-OUT_OWNER="dat/$P/$P.ownerlist.tsv"
+#P="dinglab.20250210"
+
+DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
+FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
+
+# this also writes out dat/$RUN_NAME/dinglab.$RUN_NAME.dirmap3-USER.tsv.gz files
+mkdir -p "$OUTD/dirmap"
+OUT="$OUTD/dirmap/$RUN_NAME.dirmap3.tsv.gz"
+OUT_OWNER="$OUTD/$RUN_NAME.ownerlist.tsv"
 
 CMD="time python3 src/make_dir_map_tree.py -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT "
 echo $CMD

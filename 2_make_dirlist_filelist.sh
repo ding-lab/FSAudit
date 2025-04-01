@@ -1,9 +1,14 @@
+VOL_NAME="m.wyczalkowski"
+DATESTAMP="20250331"
+OUTD_BASE="/scratch1/fs1/dinglab/m.wyczalkowski/FSAudit/dat"
 
-P="dinglab.20250210"
-DAT="dat/$P/$P.rawstat.gz"
+RUN_NAME="$VOL_NAME.$DATESTAMP"
+OUTD="$OUTD_BASE/$RUN_NAME"
 
-DIRLIST="dat/$P/$P.dirlist.tsv.gz"
-FILELIST="dat/$P/$P.filelist.tsv.gz"
+DAT="$OUTD/$RUN_NAME.rawstat.gz"
+
+DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
+FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
 ZCAT="zcat" # for mac, this should be gzcat
 
