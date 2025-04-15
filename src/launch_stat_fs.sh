@@ -11,6 +11,9 @@ mkdir -p $OUTD
 
 OUTFN="$OUTD/$RUN_NAME.rawstat.gz"
 
+>&2 echo Finding all files in $VOL_PATH
+>&2 echo Writing to $OUTFN
+
 BIN="bash src/stat_fs.sh" 
 CMD="$BIN -o $OUTFN $VOL_PATH"
 
