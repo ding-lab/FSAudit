@@ -155,7 +155,7 @@ def main():
     parser.add_option("-f", dest="filelist", help="List of files")
     parser.add_option("-o", dest="outfn", default="stdout", help="Output filename")
     parser.add_option("-u", dest="by_owner", action="store_true", help="Retain statistics for per-user dirmaps, and write them out ")
-    parser.add_option("-U", dest="ownerlist", help="Filename to generate a summary list of files and disk use per user")
+    parser.add_option("-U", dest="ownerlist", help="Generate a summary list of files and disk use per user and write to this file")
 #    parser.add_option("-O", dest="ownerdirlist", help="write out usage per user")
 
 # writing out a per-owner list of dir3 files is supported as a boolean

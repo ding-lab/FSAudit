@@ -1,6 +1,4 @@
-VOL_NAME="m.wyczalkowski"
-DATESTAMP="20250331"
-OUTD_BASE="/scratch1/fs1/dinglab/m.wyczalkowski/FSAudit/dat"
+source config.sh
 
 RUN_NAME="$VOL_NAME.$DATESTAMP"
 OUTD="$OUTD_BASE/$RUN_NAME"
@@ -18,5 +16,5 @@ OUT_OWNER="$OUTD/$RUN_NAME.ownerlist.tsv"
 
 CMD="time python3 src/make_dir_map_tree.py -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT "
 echo $CMD
-eval $CMD
+#eval $CMD
 
