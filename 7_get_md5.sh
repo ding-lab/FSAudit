@@ -16,7 +16,8 @@ function get_past_md5 {
     DATA_PATH=$1
     FILE_SIZE=$2
 
-    FOUND=$(zcat $PAST_MD5_LIST | fgrep "$DATA_PATH")
+    #FOUND=$(zcat $PAST_MD5_LIST | fgrep "$DATA_PATH")  # if compressed
+    FOUND=$(cat $PAST_MD5_LIST | fgrep "$DATA_PATH")
 # /rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/817bab80-c418-4b48-9762-81ee012493af/TCGA-YU-A912-10A-01D-A438-10_Illumina_gdc_realn.bam
 # 15978506071
 # estorrs
@@ -24,14 +25,14 @@ function get_past_md5 {
 # 2415ebd4d0d18a9a4eee165a69901023
 
     if [ -z "$FOUND" ]; then
-        >&2 echo Not found: $DATA_PATH 
+        >&2 echo Not found past MD5 for: $DATA_PATH 
         return 
     fi
 
     FS=$(echo "$FOUND" | cut -f 2)
     if [ "$FS" == "$FILE_SIZE" ]; then
         MD5=$(echo "$FOUND" | cut -f 5)
-        >&2 echo Found MD5: $DATA_PATH 
+        >&2 echo Found previously calculated MD5: $DATA_PATH 
         echo "$MD5"
         return
     fi
@@ -44,7 +45,6 @@ function get_past_md5 {
 RUN_NAME="$VOL_NAME.$DATESTAMP"
 OUTD="$OUTD_BASE/$RUN_NAME"
 
-PAST_MD5_LIST="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20250127.FSAudit/dat/dinglab.20250210/dinglab.20250210.filelist_gt_1Gb.md5.tsv.gz"
 
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 OUT="$OUTD/$RUN_NAME.filelist.gt_1Gb_md5.tsv"
@@ -73,7 +73,7 @@ while read L; do
         FSGB=$(echo "scale=2; $FS / 1024. / 1024 / 1024" | bc -l)
         if [ -e $FN ]; then
             NOW=$(date)
-            >&2 echo [$NOW]: Processing $FN \($FSGB Gb\)
+            >&2 echo [$NOW]: Calculating md5 for $FN \($FSGB Gb\)
             MD5=$(md5sum $FN | cut -f 1 -d ' ')
             printf "%s\t%s\n" "$L" $MD5 >> $OUT
         else
