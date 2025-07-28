@@ -1,3 +1,7 @@
+source ../config.sh
+RUN_NAME="$VOL_NAME.$DATESTAMP"
+P=$RUN_NAME
+OUTD="$OUTD_BASE/$RUN_NAME"
 
 function make_dirtree {
     DAT=$1
@@ -7,8 +11,6 @@ function make_dirtree {
     gzcat $DAT | dirtree -o $OUT
 }
 
-
-P="dinglab.20250210"
 
 >&2 echo Processing all entries
 FILTER_LABEL="100G"

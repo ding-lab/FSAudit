@@ -2,7 +2,12 @@
 # retain only directories above a given size
 # Write out data ready for input into dirtree
 
-P="dinglab.20250210"
+source ../config.sh
+
+
+RUN_NAME="$VOL_NAME.$DATESTAMP"
+P=$RUN_NAME
+OUTD="$OUTD_BASE/$RUN_NAME"
 
 function filter_dirmap {
     DAT=$1
