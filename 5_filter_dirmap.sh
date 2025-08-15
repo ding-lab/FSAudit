@@ -2,7 +2,7 @@
 # retain only directories above a given size
 # Write out data ready for input into dirtree
 
-source ../config.sh
+source config.sh
 
 
 RUN_NAME="$VOL_NAME.$DATESTAMP"
@@ -28,8 +28,10 @@ START=`date`
 >&2 echo [$START] Processing entire volume
 LIM=100000000000 # 100G
 FILTER_LABEL="100G"
-DATD="dat/$P/dirmap"
-OUTD="dat/$P/dirmap-filtered"
+
+# This assumes that dat is a link to /storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20250728
+DATD="dat/dirmap"
+OUTD="dat/dirmap-filtered"
 
 mkdir -p $DATD
 mkdir -p $OUTD
@@ -42,7 +44,7 @@ filter_dirmap $DAT $OUT $LIM
 # Process volume per-user
 LIM=10000000000 # 10G
 FILTER_LABEL="10G"
-ULIST="dat/$P/$P.ownerlist.tsv"
+ULIST="dat/$P.ownerlist.tsv"
 while read L; do
 
     U=$(echo "$L" | cut -f 1)
@@ -59,7 +61,7 @@ while read L; do
 
 done < $ULIST
 
-NOW=`date`
+END=`date`
 >&2 echo Start time: $START
 >&2 echo End time: $END
 >&2 echo Written to $OUT

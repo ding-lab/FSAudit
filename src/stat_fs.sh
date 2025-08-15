@@ -104,6 +104,8 @@ elif [ -z $DO_GZ ]; then
     call_find_stat $ROOT_DIR > $OUT_FN
 else
     call_find_stat $ROOT_DIR | gzip > $OUT_FN
+    >&2 echo Checking $OUT_FN for weird filenames and missing columns
+    zcat $OUT_FN | awk 'BEGIN{FS="\t"}{if (NF != 8) print}' > "/dev/stderr"
 fi
 
 NOW=$(date)

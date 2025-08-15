@@ -28,7 +28,13 @@ What I want in order
 
 ## TODO
 
-* when writing raw files, can write out dirlist and filelist at the same time.  rawstat format may even be optional
+* Create real documentation
+  * describe dirmap
+
+* Step 1 should be to write out dirlist and filelist, with raw output optional
+* Steps 3 and 4 should be merged, essentially submitting script in 4 using bsub from 3
+
+
 * We may be interested in evaluating only those dirs or files which are older than X years old
 
 

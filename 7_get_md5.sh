@@ -16,23 +16,27 @@ function get_past_md5 {
     DATA_PATH=$1
     FILE_SIZE=$2
 
-    #FOUND=$(zcat $PAST_MD5_LIST | fgrep "$DATA_PATH")  # if compressed
-    FOUND=$(cat $PAST_MD5_LIST | fgrep "$DATA_PATH")
-# /rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/817bab80-c418-4b48-9762-81ee012493af/TCGA-YU-A912-10A-01D-A438-10_Illumina_gdc_realn.bam
-# 15978506071
-# estorrs
-# 2021-10-30 02:56:48.455189843 -0500
-# 2415ebd4d0d18a9a4eee165a69901023
+    # this fails when both file.dat and file.dat.gz exist, as it may return both.  the solution here
+    # is to take the first one, and if it is the wrong one, calclulate the md5.  This should be fixed
+    # to do a stricter match.  test-md5-list.tsv.gz can be used for testing
+    FOUND=$(grep -w "$DATA_PATH" $PAST_MD5_LIST | head -n1)
+
+#/rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/817bab80-c418-4b48-9762-81ee012493af/TCGA-YU-A912-10A-01D-A438-10_Illumina_gdc_realn.bam
+#15978506071
+#estorrs
+#2025-04-02 14:41:14.526825224 -0500
+#2021-10-30 02:56:48.455189843 -0500
+#2415ebd4d0d18a9a4eee165a69901023
 
     if [ -z "$FOUND" ]; then
-        >&2 echo Not found past MD5 for: $DATA_PATH 
+        >&2 echo Novel MD5 for: $DATA_PATH 
         return 
     fi
 
     FS=$(echo "$FOUND" | cut -f 2)
     if [ "$FS" == "$FILE_SIZE" ]; then
-        MD5=$(echo "$FOUND" | cut -f 5)
-        >&2 echo Found previously calculated MD5: $DATA_PATH 
+        MD5=$(echo "$FOUND" | cut -f 6)
+        >&2 echo Cached MD5 $MD5 for: $DATA_PATH 
         echo "$MD5"
         return
     fi
@@ -45,11 +49,10 @@ function get_past_md5 {
 RUN_NAME="$VOL_NAME.$DATESTAMP"
 OUTD="$OUTD_BASE/$RUN_NAME"
 
-
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 OUT="$OUTD/$RUN_NAME.filelist.gt_1Gb_md5.tsv"
 
-FSLIM=1000000000
+FSLIM=1000000000    # 1,000,000,000
 
 rm -f $OUT
 touch $OUT
@@ -58,22 +61,33 @@ touch $OUT
 >&2 echo Old MD5 $PAST_MD5_LIST
 >&2 echo Writing to $OUT
 
-while read L; do
-    FN=$(echo "$L" | cut -f 1)
-    FS=$(echo "$L" | cut -f 2)
+# filelist
+# 1. /rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/817bab80-c418-4b48-9762-81ee012493af/TCGA-YU-A912-10A-01D-A438-10_Illumina_gdc_realn.bam
+# 2. 15978506071
+# 3. estorrs
+# 4. 2025-05-05 17:13:33.208373172 -0500
+# 5. 2021-10-30 02:56:48.455189843 -0500
 
-    if (( $FS < $FSLIM )); then
+START=`date`
+>&2 echo Start: [$START] 
+
+while read L; do
+    FN=$(echo "$L" | cut -f 1)  # filename
+    FS=$(echo "$L" | cut -f 2)  # filesize
+
+    if (( $FS < $FSLIM )); then # skip to the next file if size is less than FSLIM 
 #        >&2 echo Skipping $FN  / $FS
         continue
     fi
 
     PAST_MD5=$(get_past_md5 $FN $FS)
 
-    if [ -z $PAST_MD5 ]; then
+    if [ -z "$PAST_MD5" ]; then
         FSGB=$(echo "scale=2; $FS / 1024. / 1024 / 1024" | bc -l)
         if [ -e $FN ]; then
             NOW=$(date)
             >&2 echo [$NOW]: Calculating md5 for $FN \($FSGB Gb\)
+
             MD5=$(md5sum $FN | cut -f 1 -d ' ')
             printf "%s\t%s\n" "$L" $MD5 >> $OUT
         else
@@ -84,5 +98,9 @@ while read L; do
     fi
 
 done < <(zcat $FILELIST)
+
+END=`date`
+>&2 echo Start time: $START
+>&2 echo End time: $END
 
 >&2 echo Written to $OUT
