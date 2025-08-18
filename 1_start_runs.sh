@@ -1,12 +1,36 @@
 source config.sh
 
-# Note: this should be run from tmux container for dinglab runs
-bash src/launch_stat_fs.sh $VOL_NAME $VOL_PATH $DATESTAMP $OUTD_BASE
+# Note: suggest to run from tmux container (not bsub) for dinglab runs
+USE_BSUB=0
 
-rc=$?
-if [[ $rc != 0 ]]; then
-    >&2 echo Fatal error $rc: $!.  Exiting.
-    exit $rc;
+RUN_NAME="$VOL_NAME.$DATESTAMP"
+OUTD="$OUT_BASE/$RUN_NAME"
+mkdir -p $OUTD
+
+OUTFN="$OUTD/$RUN_NAME.rawstat.gz"
+
+>&2 echo Finding all files in $VOL_PATH
+>&2 echo Writing to $OUTFN
+
+BIN="bash src/stat_fs.sh" 
+CMD="$BIN -o $OUTFN $VOL_PATH"
+
+>&2 echo CMD= $CMD
+
+
+if [ $USE_BSUB ]; then
+    DOCKER_BIN="WUDocker/start_docker.sh"
+
+    # LSF group
+    LSFG="-g /m.wyczalkowski/wgs_coverage"
+
+    IMAGE="mwyczalkowski/python3-util:20250130" # we don't really use python here but this works
+    MAPPED_VOLS="$OUT_BASE $VOL_PATH"
+
+    DOCKER_CMD="bash $DOCKER_BIN -g \"$LSFG\" -r -M compute1 -R $RUN_NAME -I $IMAGE -c \"$CMD\" $MAPPED_VOLS"
+
+    >&2 echo Running: $DOCKER_CMD
+    eval "$DOCKER_CMD"
+else
+    eval $CMD
 fi
-
-

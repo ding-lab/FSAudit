@@ -35,7 +35,7 @@ CMD="python3 src/make_dir_map_tree.py -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST 
 
 ### BSUB
 
-# bash $DOCKER $ARGS -r -M compute1 -I $IMAGE -c "$CMD" $VOLS
+bash $DOCKER $ARGS -r -M compute1 -I $IMAGE -c "$CMD" $VOLS
 
 # for testing, no CMD run
-bash $DOCKER $ARGS -r -M compute1 -I $IMAGE $VOLS
+#bash $DOCKER $ARGS -r -M compute1 -I $IMAGE $VOLS

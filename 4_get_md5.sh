@@ -19,7 +19,7 @@ function get_past_md5 {
     # this fails when both file.dat and file.dat.gz exist, as it may return both.  the solution here
     # is to take the first one, and if it is the wrong one, calclulate the md5.  This should be fixed
     # to do a stricter match.  test-md5-list.tsv.gz can be used for testing
-    FOUND=$(grep -w "$DATA_PATH" $PAST_MD5_LIST | head -n1)
+    FOUND=$(grep -w "$DATA_PATH" $PAST_MD5 | head -n1)
 
 #/rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/817bab80-c418-4b48-9762-81ee012493af/TCGA-YU-A912-10A-01D-A438-10_Illumina_gdc_realn.bam
 #15978506071
@@ -58,7 +58,7 @@ rm -f $OUT
 touch $OUT
 
 >&2 echo Reading $FILELIST
->&2 echo Old MD5 $PAST_MD5_LIST
+>&2 echo Old MD5 $PAST_MD5
 >&2 echo Writing to $OUT
 
 # filelist
@@ -80,9 +80,9 @@ while read L; do
         continue
     fi
 
-    PAST_MD5=$(get_past_md5 $FN $FS)
+    CACHED_MD5=$(get_past_md5 $FN $FS)
 
-    if [ -z "$PAST_MD5" ]; then
+    if [ -z "$CACHED_MD5" ]; then
         FSGB=$(echo "scale=2; $FS / 1024. / 1024 / 1024" | bc -l)
         if [ -e $FN ]; then
             NOW=$(date)
@@ -94,7 +94,7 @@ while read L; do
             >&2 echo NOTE: $FN does not exist.  Continuing
         fi
     else
-        printf "%s\t%s\n" "$L" $PAST_MD5 >> $OUT
+        printf "%s\t%s\n" "$L" $CACHED_MD5 >> $OUT
     fi
 
 done < <(zcat $FILELIST)

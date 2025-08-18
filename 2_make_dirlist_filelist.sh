@@ -1,9 +1,5 @@
 source config.sh
 
-#VOL_NAME="m.wyczalkowski"
-#DATESTAMP="20250331"
-#OUTD_BASE="/scratch1/fs1/dinglab/m.wyczalkowski/FSAudit/dat"
-
 RUN_NAME="$VOL_NAME.$DATESTAMP"
 OUTD="$OUTD_BASE/$RUN_NAME"
 
@@ -13,8 +9,6 @@ DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
 ZCAT="zcat" # for mac, this should be gzcat
-
-# HEAD=" head -n 20000 "
 
 #$ examine_row dinglab.20250415.rawstat.dev-1000.tsv 15
 #     1  file_name   /rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/44421b45-a0db-4525-8c4e-c6aff0398cad/80a6e8b4-9a1d-470c-8529-e21151a864bc_wxs_gdc_realn.bam.bai

@@ -3,10 +3,9 @@
 # Washington University School of Medicine
 
 # We will write all directories and their size, calculated as the size of all files under them
-# version 2 implementation builds an internal directory tree structure then loops over all files
+# Current implementation builds an internal directory tree structure then loops over all files
 
 import sys, os, gzip, math, datetime
-#import pandas as pd
 
 # https://anytree.readthedocs.io/en/stable/intro.html
 #from anytree import Node, RenderTree, Resolver, Walker
