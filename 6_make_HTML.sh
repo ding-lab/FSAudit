@@ -1,7 +1,4 @@
 source config.sh
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-P=$RUN_NAME
-OUTD="$OUTD_BASE/$RUN_NAME"
 
 function make_dirtree {
     DAT=$1
@@ -12,29 +9,33 @@ function make_dirtree {
 }
 
 
+## First make dirtree for the entire volume, showing all directories with >100Gb
+
 >&2 echo Processing all entries
 FILTER_LABEL="100G"
-DAT="dat/dirmap-filtered/$P.dirmap3-$FILTER_LABEL.tsv.gz"
-HTML="dat/html/$P.dirmap3-$FILTER_LABEL.html"
-mkdir -p dat/html
+DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
+HTML="$OUTD/html/$RUN_NAME.dirmap3-$FILTER_LABEL.html"
+mkdir -p $OUTD/html
+mkdir -p $OUTD/html/user
+
 make_dirtree $DAT $HTML
 
 
+## Next make dirtree per user, showing all directories with >10Gb owned by that user
 FILTER_LABEL="10G"
-ULIST="dat/$P.ownerlist.tsv"
+ULIST="$OUTD/$RUN_NAME.ownerlist.tsv"
+
 
 while read L; do
-
     U=$(echo "$L" | cut -f 1)
     if [ $U == "owner_name" ]; then
         continue
     fi
 
     >&2 echo Processing user $U
-    DAT="dat/dirmap-filtered/$P.dirmap3-$U-$FILTER_LABEL.tsv.gz"
-    HTML="dat/html/$P.dirmap3-$U-$FILTER_LABEL.html"
+    DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+    HTML="$OUTD/html/user/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.html"
     make_dirtree $DAT $HTML
-
 done < $ULIST
 
 >&2 echo Written to $OUT

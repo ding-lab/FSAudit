@@ -4,6 +4,21 @@ Scripts for performing analysis and visualization of filesystem usage
 
 Analysis currently consists of several scripts run to analyze a filesystem, followed by a visualization step which generates figures.
 
+# How to run
+
+## make data directory and soft link to it
+$ mkdir /storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/mwyczalkowski.20250815
+$ ln -s /storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/mwyczalkowski.20250815 dat
+
+## Edit config.sh
+
+## Running scripts
+
+### 1_start_runs.sh
+
+Launch this from tmux.  Not launching with bsub.  Currently need to copy/paste CMD, should move src/launch_stat_fs.sh contents into
+1_start_runs.sh
+
 # Background
 
 ## Relevant `stat` options

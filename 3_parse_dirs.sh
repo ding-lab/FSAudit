@@ -17,9 +17,6 @@ VOLS="/home/m.wyczalkowski /storage1/fs1/m.wyczalkowski/Active/ProjectStorage"
 
 ##### CMD
 
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-OUTD="$OUTD_BASE/$RUN_NAME"
-
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 

@@ -2,12 +2,13 @@
 # retain only directories above a given size
 # Write out data ready for input into dirtree
 
+# This is done for both the entire volume and for the volume per user.
+# This step is then followed by step 6 for each dataset
+# Suggest to combine these, so that one step is filter + dirtree for the volume,
+# and next step is filter + dirtree per user
+
 source config.sh
 
-
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-P=$RUN_NAME
-OUTD="$OUTD_BASE/$RUN_NAME"
 
 function filter_dirmap {
     DAT=$1
@@ -29,22 +30,16 @@ START=`date`
 LIM=100000000000 # 100G
 FILTER_LABEL="100G"
 
-# This assumes that dat is a link to /storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20250728
-DATD="dat/dirmap"
-OUTD="dat/dirmap-filtered"
+mkdir -p "$OUTD/dirmap-filtered"
 
-mkdir -p $DATD
-mkdir -p $OUTD
-
-DAT="$DATD/$P.dirmap3.tsv.gz"
-OUT="$OUTD/$P.dirmap3-$FILTER_LABEL.tsv.gz"
+DAT="$OUTD/dirmap/$RUN_NAME.dirmap3.tsv.gz"
+OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
 filter_dirmap $DAT $OUT $LIM
-
 
 # Process volume per-user
 LIM=10000000000 # 10G
 FILTER_LABEL="10G"
-ULIST="dat/$P.ownerlist.tsv"
+ULIST="dat/$RUN_NAME.ownerlist.tsv"
 while read L; do
 
     U=$(echo "$L" | cut -f 1)
@@ -54,8 +49,8 @@ while read L; do
 
     NOW=`date`
     >&2 echo [$NOW] Processing user $U
-    DAT="$DATD/$P.dirmap3-$U.tsv.gz"
-    OUT="$OUTD/$P.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+    DAT="$OUTD/dirmap/$RUN_NAME.dirmap3-$U.tsv.gz"
+    OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
     LIM=10000000000 # 10G
     filter_dirmap $DAT $OUT $LIM
 

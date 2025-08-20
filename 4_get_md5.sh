@@ -1,5 +1,6 @@
 # Evaluate md5s for files greater than 1Gb, using previously calculated values where possible.  See discussion here:
 #   /home/m.wyczalkowski/Projects/FSAudit/FSAudit-20250314/README.md
+# Writes filelist with an appended md5 column for all files whose size >1Gb
 
 source config.sh
 
@@ -42,14 +43,45 @@ function get_past_md5 {
 
     >&2 echo Warning: File $DATA_PATH found but size mismatch \(expected $FS but found $FILE_SIZE\)
     return 
-    
 }
 
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-OUTD="$OUTD_BASE/$RUN_NAME"
+function process_filelist {
+# https://stackoverflow.com/questions/14004756/read-stdin-in-function-in-bash-script
+    while read L; do
+        FN=$(echo "$L" | cut -f 1)  # filename
+        FS=$(echo "$L" | cut -f 2)  # filesize
+
+        if (( $FS < $FSLIM )); then # skip to the next file if size is less than FSLIM 
+    #        >&2 echo Skipping $FN  / $FS
+            continue
+        fi
+
+        CACHED_MD5=$(get_past_md5 $FN $FS)
+
+        if [ -z "$CACHED_MD5" ]; then
+            FSGB=$(echo "scale=2; $FS / 1024. / 1024 / 1024" | bc -l)
+            if [ -e $FN ]; then
+                NOW=$(date)
+                >&2 echo [$NOW]: Calculating md5 for $FN \($FSGB Gb\)
+
+                MD5=$(md5sum $FN | cut -f 1 -d ' ')
+                printf "%s\t%s\n" "$L" $MD5 
+            else
+                >&2 echo NOTE: $FN does not exist.  Continuing
+            fi
+        else
+            printf "%s\t%s\n" "$L" $CACHED_MD5 
+        fi
+
+    done < <( cat - )   # reading from stdin
+#    done < <(zcat $FILELIST)
+
+}
 
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
-OUT="$OUTD/$RUN_NAME.filelist.gt_1Gb_md5.tsv"   # this is a terrible name - propose RN.md5-1Gb.tsv.gz
+
+OUT="$OUTD/$RUN_NAME.md5-1Gb.tsv.gz"   
+LOG="$OUTD/$RUN_NAME.md5-1Gb.log.gz"
 
 FSLIM=1000000000    # 1,000,000,000
 
@@ -70,36 +102,11 @@ touch $OUT
 START=`date`
 >&2 echo Start: [$START] 
 
-while read L; do
-    FN=$(echo "$L" | cut -f 1)  # filename
-    FS=$(echo "$L" | cut -f 2)  # filesize
-
-    if (( $FS < $FSLIM )); then # skip to the next file if size is less than FSLIM 
-#        >&2 echo Skipping $FN  / $FS
-        continue
-    fi
-
-    CACHED_MD5=$(get_past_md5 $FN $FS)
-
-    if [ -z "$CACHED_MD5" ]; then
-        FSGB=$(echo "scale=2; $FS / 1024. / 1024 / 1024" | bc -l)
-        if [ -e $FN ]; then
-            NOW=$(date)
-            >&2 echo [$NOW]: Calculating md5 for $FN \($FSGB Gb\)
-
-            MD5=$(md5sum $FN | cut -f 1 -d ' ')
-            printf "%s\t%s\n" "$L" $MD5 >> $OUT
-        else
-            >&2 echo NOTE: $FN does not exist.  Continuing
-        fi
-    else
-        printf "%s\t%s\n" "$L" $CACHED_MD5 >> $OUT
-    fi
-
-done < <(zcat $FILELIST)
+zcat $FILELIST | process_filelist 2> >(gzip > $LOG) | gzip > $OUT 
 
 END=`date`
 >&2 echo Start time: $START
 >&2 echo End time: $END
 
 >&2 echo Written to $OUT
+>&2 echo Logs: $LOG

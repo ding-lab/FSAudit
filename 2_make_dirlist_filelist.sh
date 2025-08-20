@@ -1,8 +1,5 @@
 source config.sh
 
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-OUTD="$OUTD_BASE/$RUN_NAME"
-
 DAT="$OUTD/$RUN_NAME.rawstat.gz"
 
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"

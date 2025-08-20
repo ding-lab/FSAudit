@@ -1,10 +1,9 @@
 source config.sh
+# this provides OUTD, RUN_NAME, others
 
 # Note: suggest to run from tmux container (not bsub) for dinglab runs
 USE_BSUB=0
 
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-OUTD="$OUT_BASE/$RUN_NAME"
 mkdir -p $OUTD
 
 OUTFN="$OUTD/$RUN_NAME.rawstat.gz"
