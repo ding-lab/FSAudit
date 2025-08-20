@@ -1,23 +1,22 @@
-# Ad hoc script to evaluate md5s for files greater than 1Gb.  See discussion here:
+# Evaluate md5s for files greater than 1Gb, using previously calculated values where possible.  See discussion here:
 #   /home/m.wyczalkowski/Projects/FSAudit/FSAudit-20250314/README.md
 
 source config.sh
 
-# use somehting like this to get the files > 1Gb
-#  zcat dinglab.20250210.filelist.tsv.gz | awk 'BEGIN{FS="\t";OFS="\t"}{if ($2 > 1000000000) print }' | gzip > dinglab.20250210.filelist_gt_1Gb.tsv.gz
-
-#FILELIST="dinglab.20250210.filelist_gt_1Gb.tsv.gz"
-# FILELIST="filelist-test.tsv.gz"
+# TODO: direct output to log files for later review
+# the output file should be renamed and written in compressed format
 
 # return md5 if it was previously calculated in the PAST_MD5 file
 # check both the path and the file size for consistency
 # return the string "none" if the file is not found
+# This could be improved, as it greps the entire past md5 file for each proposed md5
+# it also does not do a precise match 
 function get_past_md5 {
     DATA_PATH=$1
     FILE_SIZE=$2
 
     # this fails when both file.dat and file.dat.gz exist, as it may return both.  the solution here
-    # is to take the first one, and if it is the wrong one, calclulate the md5.  This should be fixed
+    # is to take the first one, and if it is the wrong one, filesizes will mismatch and the cost is to calclulate the md5.  This should be fixed
     # to do a stricter match.  test-md5-list.tsv.gz can be used for testing
     FOUND=$(grep -w "$DATA_PATH" $PAST_MD5 | head -n1)
 
@@ -50,7 +49,7 @@ RUN_NAME="$VOL_NAME.$DATESTAMP"
 OUTD="$OUTD_BASE/$RUN_NAME"
 
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
-OUT="$OUTD/$RUN_NAME.filelist.gt_1Gb_md5.tsv"
+OUT="$OUTD/$RUN_NAME.filelist.gt_1Gb_md5.tsv"   # this is a terrible name - propose RN.md5-1Gb.tsv.gz
 
 FSLIM=1000000000    # 1,000,000,000
 
