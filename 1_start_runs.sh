@@ -17,7 +17,7 @@ CMD="$BIN -o $OUTFN $VOL_PATH"
 >&2 echo CMD= $CMD
 
 
-if [ $USE_BSUB ]; then
+if [ "$USE_BSUB" == 1 ]; then
     DOCKER_BIN="WUDocker/start_docker.sh"
 
     # LSF group
