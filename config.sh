@@ -2,15 +2,16 @@
 # dinglab	/storage1/fs1/dinglab/Active
 # m.wyczalkowski	/storage1/fs1/m.wyczalkowski/Active
 
-VOL_NAME="mwyczalkowski"
-VOL_PATH="/storage1/fs1/m.wyczalkowski/Active"
-DATESTAMP="20250815"
-OUTD_BASE="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit"
+#VOL_NAME="MMRF_analysis"
+#VOL_PATH="/diskmnt/Projects2/MMRF_analysis"
 
-RUN_NAME="$VOL_NAME.$DATESTAMP"
-OUTD="$OUTD_BASE/$RUN_NAME"
+PROJECT_NAME="katmai"
+DATESTAMP="20250916"
+OUTD_BASE="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output"
 
-#PAST_MD5="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/m.wyczalkowski.20250331/m.wyczalkowski.20250331.filelist.gt_1Gb_md5.tsv"
+RUN_NAME="$PROJECT_NAME.$DATESTAMP"
 
-PAST_MD5=/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/m.wyczalkowski.20250612/m.wyczalkowski.20250612.filelist.gt_1Gb_md5.tsv
+OUTD="$OUTD_BASE/${RUN_NAME}"
+
+#PAST_MD5=/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/m.wyczalkowski.20250612/m.wyczalkowski.20250612.filelist.gt_1Gb_md5.tsv
 

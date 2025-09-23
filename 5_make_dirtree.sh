@@ -3,6 +3,11 @@
 # retain only directories above a given size
 # Write out data ready for input into dirtree
 
+# Todo: combine filtering and HTML creatin into one step per user
+# also, merge the all-volume and per-user code below
+
+# Last, prepare a tar.gz of the HTML structure
+
 source config.sh
 
 function filter_dirmap {
@@ -49,6 +54,56 @@ mkdir -p $OUTD/html
 mkdir -p $OUTD/html/user
 
 make_dirtree $DAT $HTML
+
+>&2 echo Written to $OUT and $HTML
+
+END=`date`
+>&2 echo Start time: $START
+>&2 echo End time: $END
+>&2 echo Written to $OUT
+
+
+####### below is from per-user
+
+START=`date`
+# Process volume per-user
+LIM=10000000000 # 10G
+FILTER_LABEL="10G"
+
+ULIST="$OUTD/$RUN_NAME.ownerlist.tsv"
+while read L; do
+
+    U=$(echo "$L" | cut -f 1)
+    if [ $U == "owner_name" ]; then
+        continue
+    fi
+
+    NOW=`date`
+    >&2 echo [$NOW] Processing user $U
+    DAT="$OUTD/dirmap/$RUN_NAME.dirmap3-$U.tsv.gz"
+    OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+    LIM=10000000000 # 10G
+    filter_dirmap $DAT $OUT $LIM
+
+done < $ULIST
+
+## Next make dirtree per user, showing all directories with >10Gb owned by that user
+>&2 echo Processing dirtree per user
+mkdir -p $OUTD/html/user
+
+make_dirtree $DAT $HTML
+
+while read L; do
+    U=$(echo "$L" | cut -f 1)
+    if [ $U == "owner_name" ]; then
+        continue
+    fi
+
+    >&2 echo Processing user $U
+    DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+    HTML="$OUTD/html/user/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.html"
+    make_dirtree $DAT $HTML
+done < $ULIST
 
 >&2 echo Written to $OUT and $HTML
 

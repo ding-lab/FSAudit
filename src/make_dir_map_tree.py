@@ -155,6 +155,7 @@ def main():
     parser.add_option("-o", dest="outfn", default="stdout", help="Output filename")
     parser.add_option("-u", dest="by_owner", action="store_true", help="Retain statistics for per-user dirmaps, and write them out ")
     parser.add_option("-U", dest="ownerlist", help="Generate a summary list of files and disk use per user and write to this file")
+    parser.add_option("-R", dest="root_node", default="rdcw", help="Root node of the filesystem")
 #    parser.add_option("-O", dest="ownerdirlist", help="write out usage per user")
 
 # writing out a per-owner list of dir3 files is supported as a boolean
@@ -166,7 +167,8 @@ def main():
     # not clear how to do this with no assumptions about root dir
     # dirsize holds cumulative sum of all files in a directory
     # dirsize_user is a cumulative sum of all files per user
-    rootNode = anytree.Node("rdcw", dirsize=0, dirsize_user={})
+    #rootNode = anytree.Node("rdcw", dirsize=0, dirsize_user={})
+    rootNode = anytree.Node(options.root_node, dirsize=0, dirsize_user={})
     eprint("[%s] Making dirlist from %s" % (datetime.datetime.now(), options.dirlist))
     make_dirtree(options.dirlist, rootNode)
 

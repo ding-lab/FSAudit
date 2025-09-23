@@ -53,4 +53,8 @@ What I want in order
 * We may be interested in evaluating only those dirs or files which are older than X years old
 
 
-
+Dirtree:
+https://github.com/emad-elsaid/dirtree
+gem install dirtree 
+-> needs gem
+conda install gem
