@@ -28,9 +28,10 @@ function make_dirtree {
     DAT=$1
     OUT=$2
 
-    >&2 echo Reading $DAT, Writing to $OUT
+    >&2 echo make_dirtree: Reading $DAT, Writing to $OUT
     zcat $DAT | dirtree -o $OUT
 }
+
 
 
 # Process entire volume 
@@ -41,26 +42,29 @@ FILTER_LABEL="100G"
 
 mkdir -p "$OUTD/dirmap-filtered"
 
+>&2 echo filter_dirmap: $DAT $OUT $LIM
 DAT="$OUTD/dirmap/$RUN_NAME.dirmap3.tsv.gz"
-OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
-filter_dirmap $DAT $OUT $LIM
+OUT_F="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
+filter_dirmap $DAT $OUT_F $LIM
 
 ## Make dirtree for the entire volume, showing all directories with >100Gb
 
 >&2 echo Processing all entries
-DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
+#DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
 HTML="$OUTD/html/$RUN_NAME.dirmap3-$FILTER_LABEL.html"
 mkdir -p $OUTD/html
 mkdir -p $OUTD/html/user
 
-make_dirtree $DAT $HTML
+make_dirtree $OUT_F $HTML
 
->&2 echo Written to $OUT and $HTML
+>&2 echo Written to $OUT_F and $HTML
 
 END=`date`
 >&2 echo Start time: $START
 >&2 echo End time: $END
 >&2 echo Written to $OUT
+
+exit
 
 
 ####### below is from per-user
@@ -111,3 +115,12 @@ END=`date`
 >&2 echo Start time: $START
 >&2 echo End time: $END
 >&2 echo Written to $OUT
+
+### make tar file
+TAR="$OUTD/${RUN_NAME}.html.tar.gz"
+SRC="html"  # this is relative to $OUTD
+
+CMD="tar -C $OUTD -zcf $TAR $SRC"
+>&2 echo CMD=$CMD
+eval $CMD
+>&2 echo Written to $TAR
