@@ -81,7 +81,8 @@ function process_filelist {
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
 OUT="$OUTD/$RUN_NAME.md5-1Gb.tsv.gz"   
-LOG="$OUTD/$RUN_NAME.md5-1Gb.log.gz"
+#LOG="$OUTD/$RUN_NAME.md5-1Gb.log.gz"   # TESTING
+LOG="$OUTD/$RUN_NAME.md5-1Gb.log"
 
 FSLIM=1000000000    # 1,000,000,000
 
@@ -91,6 +92,12 @@ touch $OUT
 >&2 echo Reading $FILELIST
 >&2 echo Old MD5 $PAST_MD5
 >&2 echo Writing to $OUT
+>&2 echo Logs to $LOG
+
+if [ ! -e $PAST_MD5 ]; then
+    >&2 echo ERROR: $PAST_MD5 does not exist
+    exit 1
+fi
 
 # filelist
 # 1. /rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/817bab80-c418-4b48-9762-81ee012493af/TCGA-YU-A912-10A-01D-A438-10_Illumina_gdc_realn.bam
@@ -102,7 +109,12 @@ touch $OUT
 START=`date`
 >&2 echo Start: [$START] 
 
-zcat $FILELIST | process_filelist 2> >(gzip > $LOG) | gzip > $OUT 
+
+# this below should work...
+#zcat $FILELIST | process_filelist 2> >(gzip > $LOG) | gzip > $OUT 
+
+# Here for testing, no compressing log outptu
+zcat $FILELIST | process_filelist 2> $LOG | gzip > $OUT 
 
 END=`date`
 >&2 echo Start time: $START
