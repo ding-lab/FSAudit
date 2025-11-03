@@ -56,13 +56,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     col_names = ["file_name", "file_size", "owner_name", "time_access", "time_mod"]
-    eprint(f"Reading {args.filelist}")
+    eprint(f"Reading file list {args.filelist}")
     filelist = pd.read_csv(args.filelist, sep="\t", names=col_names)
     filelist = filelist[ filelist['file_size'] >= args.minsize ]
 
     col_names_md5 = ["file_name", "file_size", "owner_name", "time_access", "time_mod", "md5"]
-    eprint(f"Reading {args.cached}")
-    cached = pd.read_csv(args.cached, sep="\t", names=col_names_md5)
+    if args.cached:
+        eprint(f"Reading cached md5s {args.cached}")
+        cached = pd.read_csv(args.cached, sep="\t", names=col_names_md5)
+    else:
+        eprint(f"No cached md5s passed")
+        cached = pd.DataFrame(columns=col_names_md5)
+
 
     uncached = get_uncached_files(filelist, cached)
     
