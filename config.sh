@@ -6,12 +6,12 @@
 #VOL_PATH="/diskmnt/Projects2/MMRF_analysis"
 
 PROJECT_NAME="katmai"
-DATESTAMP="20250916"
+DATESTAMP="20251103"
 OUTD_BASE="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output"
 
 RUN_NAME="$PROJECT_NAME.$DATESTAMP"
 
 OUTD="$OUTD_BASE/${RUN_NAME}"
 
-#PAST_MD5=/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/m.wyczalkowski.20250612/m.wyczalkowski.20250612.filelist.gt_1Gb_md5.tsv
+PAST_MD5="$OUTD_BASE/katmai.20250916/katmai.20250916.md5-raw.tsv"
 

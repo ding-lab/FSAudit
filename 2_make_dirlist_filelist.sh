@@ -1,6 +1,12 @@
 source config.sh
 
-DAT="$OUTD/$RUN_NAME.rawstat.gz"
+#DAT="$OUTD/$RUN_NAME.rawstat.gz"
+
+# DEV Start
+echo DEVELOPMENT DATA
+RUN_NAME="dev100"  # normally this is defined in config.sh
+DAT="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output/katmai.20251103/dev-data/dev100.rawstat.gz"
+# DEV end
 
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"

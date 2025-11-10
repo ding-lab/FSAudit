@@ -51,18 +51,20 @@ def add_file_to_tree(filepath, filesize, owner_name, root, resolver, walker):
 #     1 file_name   /rdcw/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20230427.SW_vs_TD/dat/call-rescuevaffilter_pindel/rescuevaffilter.cwl
 #     4 owner_name  m.wyczalkowski
 #     5 time_mod    2023-02-01 18:11:36.000000000 -0600
-def make_dirtree(fn, rootNode):
+def make_dirtree(fn, rootNode, appendRoot):
     with gzip.open(fn, mode='rt') as dirlist:
         for i, line in enumerate(dirlist):
 #            eprint("Line %d: %s" % (i, line))
             dirpath = line.split("\t")[0]
+            if appendRoot:
+                dirpath = "/" + rootNode.name + dirpath
             add_dir_to_tree(dirpath, rootNode)
 
 #     1	file_name	/rdcw/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20230427.SW_vs_TD/dat/call-rescuevaffilter_pindel/rescuevaffilter.cwl/b9ea6316-ce5e-401f-9ff8-dc181ed7db4d/call-somatic_vaf_filter_A/execution/rc
 #     3	file_size	2
 #     4	owner_name	m.wyczalkowski
 #     5	time_mod	2023-02-01 18:11:47.000000000 -0600
-def parse_files(fn, rootNode, by_owner=False):
+def parse_files(fn, rootNode, appendRoot, by_owner=False):
     resolver = anytree.Resolver()
     walker = anytree.Walker()
     with gzip.open(fn, mode='rt') as filelist:
@@ -71,6 +73,8 @@ def parse_files(fn, rootNode, by_owner=False):
             try:
                 tok = line.split("\t")
                 filepath = tok[0]# .lstrip("/")
+                if appendRoot:
+                    filepath = "/" + rootNode.name + filepath
                 filesize = int(tok[1])
                 owner_name = tok[2] if by_owner else None
 
@@ -156,6 +160,7 @@ def main():
     parser.add_option("-u", dest="by_owner", action="store_true", help="Retain statistics for per-user dirmaps, and write them out ")
     parser.add_option("-U", dest="ownerlist", help="Generate a summary list of files and disk use per user and write to this file")
     parser.add_option("-R", dest="root_node", default="rdcw", help="Root node of the filesystem")
+    parser.add_option("-r", dest="append_root", action="store_true", help="Add root_node as prefix to all paths")
 #    parser.add_option("-O", dest="ownerdirlist", help="write out usage per user")
 
 # writing out a per-owner list of dir3 files is supported as a boolean
@@ -170,7 +175,7 @@ def main():
     #rootNode = anytree.Node("rdcw", dirsize=0, dirsize_user={})
     rootNode = anytree.Node(options.root_node, dirsize=0, dirsize_user={})
     eprint("[%s] Making dirlist from %s" % (datetime.datetime.now(), options.dirlist))
-    make_dirtree(options.dirlist, rootNode)
+    make_dirtree(options.dirlist, rootNode, options.append_root)
 
     eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), options.filelist))
     parse_files(options.filelist, rootNode, options.by_owner)

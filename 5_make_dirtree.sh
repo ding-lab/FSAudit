@@ -21,6 +21,8 @@ function filter_dirmap {
     GZIP="gzip"
     COL="3"
 
+exit
+
     $CAT $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | cut -f 3 |  $GZIP > $OUT
 }
 
@@ -33,94 +35,106 @@ function make_dirtree {
 }
 
 
+function process_all {
+    # Process entire volume 
+    START=`date`
+    >&2 echo [$START] Processing entire volume
+    LIM=100000000000 # 100G
+    FILTER_LABEL="100G"
 
-# Process entire volume 
-START=`date`
->&2 echo [$START] Processing entire volume
-LIM=100000000000 # 100G
-FILTER_LABEL="100G"
+    mkdir -p "$OUTD/dirmap-filtered"
 
-mkdir -p "$OUTD/dirmap-filtered"
+    >&2 echo filter_dirmap: $DAT $OUT $LIM
+    DAT="$OUTD/dirmap/$RUN_NAME.dirmap3.tsv.gz"
+    OUT_F="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
+    filter_dirmap $DAT $OUT_F $LIM
 
->&2 echo filter_dirmap: $DAT $OUT $LIM
-DAT="$OUTD/dirmap/$RUN_NAME.dirmap3.tsv.gz"
-OUT_F="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
-filter_dirmap $DAT $OUT_F $LIM
+    ## Make dirtree for the entire volume, showing all directories with >100Gb
 
-## Make dirtree for the entire volume, showing all directories with >100Gb
+    >&2 echo Processing all entries
+    #DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
+    HTML="$OUTD/html/$RUN_NAME.dirmap3-$FILTER_LABEL.html"
+    mkdir -p $OUTD/html
+    mkdir -p $OUTD/html/user
 
->&2 echo Processing all entries
-#DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$FILTER_LABEL.tsv.gz"
-HTML="$OUTD/html/$RUN_NAME.dirmap3-$FILTER_LABEL.html"
-mkdir -p $OUTD/html
-mkdir -p $OUTD/html/user
+    make_dirtree $OUT_F $HTML
 
-make_dirtree $OUT_F $HTML
+    >&2 echo Written to $OUT_F and $HTML
 
->&2 echo Written to $OUT_F and $HTML
-
-END=`date`
->&2 echo Start time: $START
->&2 echo End time: $END
->&2 echo Written to $OUT
-
-exit
-
+    END=`date`
+    >&2 echo Start time: $START
+    >&2 echo End time: $END
+    >&2 echo Written to $OUT
+}
 
 ####### below is from per-user
 
-START=`date`
-# Process volume per-user
-LIM=10000000000 # 10G
-FILTER_LABEL="10G"
-
-ULIST="$OUTD/$RUN_NAME.ownerlist.tsv"
-while read L; do
-
-    U=$(echo "$L" | cut -f 1)
-    if [ $U == "owner_name" ]; then
-        continue
-    fi
-
-    NOW=`date`
-    >&2 echo [$NOW] Processing user $U
-    DAT="$OUTD/dirmap/$RUN_NAME.dirmap3-$U.tsv.gz"
-    OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+function process_user {
+    >&2 echo Starting per user
+    START=`date`
+    # Process volume per-user
     LIM=10000000000 # 10G
-    filter_dirmap $DAT $OUT $LIM
+    FILTER_LABEL="10G"
 
-done < $ULIST
+    ULIST="$OUTD/$RUN_NAME.ownerlist.tsv"
 
-## Next make dirtree per user, showing all directories with >10Gb owned by that user
->&2 echo Processing dirtree per user
-mkdir -p $OUTD/html/user
+>&2 echo USING OLD ownerlist
+# as of 11/7/25, the 20251103 list is blank.  Using old one
+# TODO: examine why ownerlist is blank
+ULIST="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output/katmai.20250916/katmai.20250916.ownerlist.tsv"
+    >&2 echo ULIST $ULIST
+    while read L; do
 
-make_dirtree $DAT $HTML
+        U=$(echo "$L" | cut -f 1)
+        if [ $U == "owner_name" ]; then
+            continue
+        fi
 
-while read L; do
-    U=$(echo "$L" | cut -f 1)
-    if [ $U == "owner_name" ]; then
-        continue
-    fi
+        NOW=`date`
+        >&2 echo [$NOW] Processing user $U
+        DAT="$OUTD/dirmap/$RUN_NAME.dirmap3-$U.tsv.gz"
+        OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+        LIM=10000000000 # 10G
+        filter_dirmap $DAT $OUT $LIM
 
-    >&2 echo Processing user $U
-    DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
-    HTML="$OUTD/html/user/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.html"
+    done < $ULIST
+
+    ## Next make dirtree per user, showing all directories with >10Gb owned by that user
+    >&2 echo Processing dirtree per user
+    mkdir -p $OUTD/html/user
+
     make_dirtree $DAT $HTML
-done < $ULIST
 
->&2 echo Written to $OUT and $HTML
+    while read L; do
+        U=$(echo "$L" | cut -f 1)
+        if [ $U == "owner_name" ]; then
+            continue
+        fi
 
-END=`date`
->&2 echo Start time: $START
->&2 echo End time: $END
->&2 echo Written to $OUT
+        >&2 echo Processing user $U
+        DAT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
+        HTML="$OUTD/html/user/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.html"
+        make_dirtree $DAT $HTML
+    done < $ULIST
 
-### make tar file
-TAR="$OUTD/${RUN_NAME}.html.tar.gz"
-SRC="html"  # this is relative to $OUTD
+    >&2 echo Written to $OUT and $HTML
 
-CMD="tar -C $OUTD -zcf $TAR $SRC"
->&2 echo CMD=$CMD
-eval $CMD
->&2 echo Written to $TAR
+    END=`date`
+    >&2 echo Start time: $START
+    >&2 echo End time: $END
+    >&2 echo Written to $OUT
+}
+
+function make_tar {
+    ### make tar file
+    TAR="$OUTD/${RUN_NAME}.html.tar.gz"
+    SRC="html"  # this is relative to $OUTD
+
+    CMD="tar -C $OUTD -zcf $TAR $SRC"
+    >&2 echo CMD=$CMD
+    eval $CMD
+    >&2 echo Written to $TAR
+}
+
+process_user
+

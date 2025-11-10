@@ -1,5 +1,11 @@
 source config.sh
 
+# don't use this script.  All katmai rawstat files should have been already merged
+
+>&2 echo Dont use this
+exit 1
+
+
 JUSTONE=0
 
 mkdir -p $OUTD

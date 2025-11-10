@@ -1,5 +1,15 @@
 Scripts for performing analysis and visualization of filesystem usage
 
+# Format
+
+## File List format
+
+file_name	/rdcw/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20230427.SW_vs_TD/dat/call-rescuevaffilter_pindel/rescuevaffilter.cwl/b9ea6316-ce5e-401f-9ff8-dc181ed7db4d/call-somatic_vaf_filter_A/execution/rc
+file_size	2
+owner_name	m.wyczalkowski
+time_access 2025-04-02 14:32:21.316975250 -0500
+time_mod	2023-02-01 18:11:47.000000000 -0600
+
 # Overview
 
 Analysis currently consists of several scripts run to analyze a filesystem, followed by a visualization step which generates figures.
@@ -51,6 +61,7 @@ What I want in order
 
 
 * We may be interested in evaluating only those dirs or files which are older than X years old
+
 
 
 Dirtree:

@@ -168,6 +168,13 @@ function get_stat_fs_cmd {
     DATD=$3
 
     OUTFN="$DATD/${VOLUME_NAME}.rawstat.gz"
+
+    # be careful to not overwrite past data
+    if [ -e $OUTFN ]; then
+        >&2 echo ERROR: $OUTFN exists.  Delete if necessary
+        exit 1
+    fi
+
 # src/stat_fs.sh has no support for volume names
     CMD="bash src/stat_fs.sh -o $OUTFN $VOLUME "
 
