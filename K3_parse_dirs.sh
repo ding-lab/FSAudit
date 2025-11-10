@@ -12,6 +12,15 @@ VOLS="/home/mwyczalk_test"
 
 ##### CMD
 
+
+# DEV
+echo DEV data
+
+RUN_NAME="DEV-150"
+OUTD="dev-data/dat"
+OUTD="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/katmai.20251103/dev-data/dat"
+# /DEV
+
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
@@ -23,13 +32,18 @@ OUT_OWNER="$OUTD/$RUN_NAME.ownerlist.tsv"
 
 ROOT="-R root -r"
 
-CMD="python3 src/make_dir_map_tree.py $ROOT -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT "
+PY="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/katmai.20251103/src/make_dir_map_tree.py"
+CMD="python3 $PY $ROOT -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT "
 
 >&2 echo CMD = $CMD
-eval $CMD
+#eval $CMD
 
-### docker.  Not being currently done, but develop this
+### docker.  
+# https://github.com/ding-lab/WUDocker.git
 
-#bash $DOCKER $ARGS -r -M compute1 -I $IMAGE -c "$CMD" $VOLS
+CMD_DOCKER="start_docker.sh $ARGS -r -M docker -I $IMAGE -c \"$CMD\" $VOLS"
+
+echo CMD_DOCKER = $CMD_DOCKER
+eval "$CMD_DOCKER"
 
 

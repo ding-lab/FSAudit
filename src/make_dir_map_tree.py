@@ -32,10 +32,10 @@ def add_dir_to_tree(dirpath, root):
 def add_file_to_tree(filepath, filesize, owner_name, root, resolver, walker):
 # use Resolver to get leaf directory
     dirpath = os.path.dirname(filepath)
-#    eprint("path, dirpath, size = %s, %s, %d" % (filepath, dirpath, filesize))
-#    eprint("root = %s" % root)
+#    eprint("DEBUG: path, dirpath, size = %s, %s, %d" % (filepath, dirpath, filesize))
+#    eprint("DEBUG: root = %s" % root)
     leaf = resolver.get(root, dirpath)
-#    eprint("leaf = %s" % leaf)
+#    eprint("DEBUG: leaf = %s" % leaf)
 
     # https://anytree.readthedocs.io/en/stable/api/anytree.walker.html
     for n in walker.walk(root, leaf)[2]:
@@ -54,6 +54,8 @@ def add_file_to_tree(filepath, filesize, owner_name, root, resolver, walker):
 def make_dirtree(fn, rootNode, appendRoot):
     with gzip.open(fn, mode='rt') as dirlist:
         for i, line in enumerate(dirlist):
+            if i == 0:  # skip the header line
+                continue
 #            eprint("Line %d: %s" % (i, line))
             dirpath = line.split("\t")[0]
             if appendRoot:
@@ -69,6 +71,8 @@ def parse_files(fn, rootNode, appendRoot, by_owner=False):
     walker = anytree.Walker()
     with gzip.open(fn, mode='rt') as filelist:
         for i, line in enumerate(filelist):
+            if i == 0:  # skip the header line
+                continue
 #            eprint("Line %d: %s" % (i, line))
             try:
                 tok = line.split("\t")
@@ -92,39 +96,34 @@ def convert_size(size_bytes, ndigits=2):
    s = round(size_bytes / p, ndigits)  # None for int
    return "%s %s" % (s, size_name[i])
 
-
-# write out dirmap for all files
-# optionally, write out per-user dirmap
-#   filename for per-user dirmap is same as for dirmap but with username appended before extension
-def write_all_dirtrees(fn, rootNode, by_owner=None):
-    # write dirmap for all users
-
-    write_dirtree(fn, rootNode)
-
+def write_dirtree_by_owner(fn, rootNode):
     # Optionally, write it for all owners individually
-    if by_owner:
-        users = list(rootNode.dirsize_user.keys())  # for some reason rootNode does not have any information with it
-        fn_base, fn_ext = os.path.splitext(fn)
-        if (fn_ext == ".gz"):
-            fn_base, fn_ext = os.path.splitext(fn_base)
-            fn_ext = "%s.gz" % fn_ext
+#   filename for per-user dirmap is same as for dirmap but with username appended before extension
+    users = list(rootNode.dirsize_user.keys())  # for some reason rootNode does not have any information with it
+    fn_base, fn_ext = os.path.splitext(fn)
+    if (fn_ext == ".gz"):
+        fn_base, fn_ext = os.path.splitext(fn_base)
+        fn_ext = "%s.gz" % fn_ext
 
-        eprint("fn_base = %s fn_ext = %s" % (fn_base, fn_ext))
-        for u in users:
-            if "/" in u:        # sometimes see weird filenames which messes up usernames
-                eprint("WARNING: possibly weird username %s.  Skipping" % u)
-            fnu = "%s-%s%s" % (fn_base, u, fn_ext)
-            # confirm that filename using username is not weird: https://stackoverflow.com/questions/8686880/validate-a-filename-in-python
-            if not os.path.normpath(fnu).startswith(fn_base):
-                eprint("WARNING: invalid path %s.  Skipping" % fnu)
+    # eprint("fn_base = %s fn_ext = %s" % (fn_base, fn_ext))
+    for u in users:
+        if "/" in u:        # sometimes see weird filenames which messes up usernames
+            eprint("WARNING: possibly weird username %s.  Skipping" % u)
+        fnu = "%s-%s%s" % (fn_base, u, fn_ext)
+        # confirm that filename using username is not weird: https://stackoverflow.com/questions/8686880/validate-a-filename-in-python
+        if not os.path.normpath(fnu).startswith(fn_base):
+            eprint("WARNING: invalid path %s.  Skipping" % fnu)
 
-            eprint("Saving to %s" % fnu)
-            write_dirtree(fnu, rootNode, user=u)
+        eprint("Saving to %s" % fnu)
+        write_dirtree(fnu, rootNode, user=u)
 
 # We want to write out all non-zero size directories along with their sizes.  Also, we write out a new directory tree where each directory name
 # is replaced by that name with directory size appended, e.g. "/foo/bar" becomes "/foo 46MB/bar 256KB".  This is intended for visualization purposes
 def write_dirtree(fn, rootNode, user=None):
-    eprint("[%s] Writing compressed dirtree to %s for user %s" % (datetime.datetime.now(), fn, str(user)))
+    if user:
+        eprint("[%s] Writing compressed dirtree to %s for user %s" % (datetime.datetime.now(), fn, str(user)))
+    else:
+        eprint("[%s] Writing compressed dirtree to %s for all users" % (datetime.datetime.now(), fn))
 #    with open(fn,"w") as f:            # this for text file output
     with gzip.open(fn, "wt") as f:    # this for gzip file output
         for i, n in enumerate(anytree.LevelOrderIter(rootNode)):
@@ -169,7 +168,7 @@ def main():
     (options, params) = parser.parse_args()
 
 #        eprint("[%s]: tree depth = %d: %d files" % (datetime.datetime.now(), L, len(dirsL.index) ))
-    # not clear how to do this with no assumptions about root dir
+
     # dirsize holds cumulative sum of all files in a directory
     # dirsize_user is a cumulative sum of all files per user
     #rootNode = anytree.Node("rdcw", dirsize=0, dirsize_user={})
@@ -178,14 +177,16 @@ def main():
     make_dirtree(options.dirlist, rootNode, options.append_root)
 
     eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), options.filelist))
-    parse_files(options.filelist, rootNode, options.by_owner)
+    parse_files(options.filelist, rootNode, options.append_root, options.by_owner)
 
     rootNode.dirsize = rootNode.children[0].dirsize
     rootNode.dirsize_user = rootNode.children[0].dirsize_user
     
-#    eprint(anytree.RenderTree(rootNode, maxlevel = 6))
+    # eprint(anytree.RenderTree(rootNode, maxlevel = 12))
 
-    write_all_dirtrees(options.outfn, rootNode, options.by_owner)
+    write_dirtree(options.outfn, rootNode)
+    if options.by_owner:
+        write_dirtree_by_owner(options.outfn, rootNode)
 
     if options.ownerlist:
         write_file_stats(rootNode.dirsize_user, options.ownerlist)
