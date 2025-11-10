@@ -1,8 +1,0 @@
-Branch started to work on katmai-specific implementation
-
-Main difference is that katmai has a bunch of small volumes, rather than one big one.  It is likely we'll have to merge them somehow.
-Also, katmai does not have bsub, and it has a different volume permission system - I may need to run as root
-
-
-
-
