@@ -8,6 +8,8 @@
 
 # Last, prepare a tar.gz of the HTML structure
 
+# This assumes existence of dirtree in path
+
 source config.sh
 
 function filter_dirmap {
@@ -20,8 +22,6 @@ function filter_dirmap {
     CAT="zcat"
     GZIP="gzip"
     COL="3"
-
-exit
 
     $CAT $DAT | awk -v LIM=$LIM 'BEGIN{FS="\t"; OFS="\t"}{if ($2 > LIM) print}' | cut -f 3 |  $GZIP > $OUT
 }
@@ -78,10 +78,6 @@ function process_user {
 
     ULIST="$OUTD/$RUN_NAME.ownerlist.tsv"
 
->&2 echo USING OLD ownerlist
-# as of 11/7/25, the 20251103 list is blank.  Using old one
-# TODO: examine why ownerlist is blank
-ULIST="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output/katmai.20250916/katmai.20250916.ownerlist.tsv"
     >&2 echo ULIST $ULIST
     while read L; do
 
@@ -137,4 +133,4 @@ function make_tar {
 }
 
 process_user
-
+make_tar

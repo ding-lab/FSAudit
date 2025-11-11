@@ -12,15 +12,6 @@ VOLS="/home/mwyczalk_test"
 
 ##### CMD
 
-
-# DEV
-echo DEV data
-
-RUN_NAME="DEV-150"
-OUTD="dev-data/dat"
-OUTD="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/katmai.20251103/dev-data/dat"
-# /DEV
-
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
