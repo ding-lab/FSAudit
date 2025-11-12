@@ -12,6 +12,9 @@
 
 source config.sh
 
+ALT_RUN_NAME="katmai.20251103b"
+RUN_NAME=$ALT_RUN_NAME
+
 function filter_dirmap {
     DAT=$1
     OUT=$2
@@ -90,7 +93,6 @@ function process_user {
         >&2 echo [$NOW] Processing user $U
         DAT="$OUTD/dirmap/$RUN_NAME.dirmap3-$U.tsv.gz"
         OUT="$OUTD/dirmap-filtered/$RUN_NAME.dirmap3-$U-$FILTER_LABEL.tsv.gz"
-        LIM=10000000000 # 10G
         filter_dirmap $DAT $OUT $LIM
 
     done < $ULIST
@@ -98,8 +100,6 @@ function process_user {
     ## Next make dirtree per user, showing all directories with >10Gb owned by that user
     >&2 echo Processing dirtree per user
     mkdir -p $OUTD/html/user
-
-    make_dirtree $DAT $HTML
 
     while read L; do
         U=$(echo "$L" | cut -f 1)
@@ -132,5 +132,6 @@ function make_tar {
     >&2 echo Written to $TAR
 }
 
+process_all
 process_user
 make_tar
