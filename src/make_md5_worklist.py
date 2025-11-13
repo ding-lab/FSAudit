@@ -5,6 +5,7 @@
 import argparse
 import sys
 import pandas as pd
+import numpy as np
 
 
 #FILELIST=/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20250909/dinglab.20250909.filelist.tsv.gz
@@ -55,12 +56,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    col_names = ["file_name", "file_size", "owner_name", "time_access", "time_mod"]
+#    col_names = ["file_name", "file_size", "owner_name", "time_access", "time_mod"]
+#    col_dtype = {"file_name":str, "file_size":np.int64, "owner_name":str, "time_access":str, "time_mod":str}
     eprint(f"Reading file list {args.filelist}")
-    filelist = pd.read_csv(args.filelist, sep="\t", names=col_names)
+    filelist = pd.read_csv(args.filelist, sep="\t") # , names=col_names), dtype=col_dtype)
+
+    print(f"Number of files total {len(filelist.index)}")
+
     filelist = filelist[ filelist['file_size'] >= args.minsize ]
 
-    col_names_md5 = ["file_name", "file_size", "owner_name", "time_access", "time_mod", "md5"]
+    print(f"Number of files >= {args.minsize}: {len(filelist.index)}")
+
+    # currently, cached file on katmai has two columns: md5 and path
+    #col_names_md5 = ["file_name", "file_size", "owner_name", "time_access", "time_mod", "md5"]
+    col_names_md5 = ["md5", "file_name"]
     if args.cached:
         eprint(f"Reading cached md5s {args.cached}")
         cached = pd.read_csv(args.cached, sep="\t", names=col_names_md5)
@@ -68,9 +77,10 @@ if __name__ == "__main__":
         eprint(f"No cached md5s passed")
         cached = pd.DataFrame(columns=col_names_md5)
 
-
     uncached = get_uncached_files(filelist, cached)
     
+    print(f"Number of uncached files >= {len(uncached.index)}")
+
     eprint(f"Writing to {args.outfn}")
     uncached.to_csv(args.outfn, sep="\t", index=False)
 
