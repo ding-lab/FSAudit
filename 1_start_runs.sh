@@ -6,7 +6,7 @@ USE_BSUB=0
 
 mkdir -p $OUTD
 
-OUTFN="$OUTD/$RUN_NAME.rawstat.gz"
+OUTFN="$OUTD/raw/$RUN_NAME.rawstat.gz"
 
 if [ -e $OUTFN ]; then
     >&2 echo ERROR: $OUTFN exists.  Delete if necessary

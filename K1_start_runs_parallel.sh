@@ -7,9 +7,9 @@ mkdir -p $OUTD
 
 #OUTFN="$OUTD/$RUN_NAME.rawstat.gz"
 LOGD="$OUTD/log"
-DATD="$OUTD/dat"
+DATD="$OUTD/raw"
 
-VL="../VolumeList/VolumeList-C2.dat"  # C is most current list of 20251103
+VL="dat/VolumeList-rescuebox1.dat"
 
 >&2 echo Finding all files in $VOL_PATH
 >&2 echo Writing to $OUTFN

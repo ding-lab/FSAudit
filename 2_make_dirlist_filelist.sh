@@ -7,10 +7,6 @@ source config.sh
 #DAT="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output/katmai.20251103/dev-data/dev100.rawstat.gz"
 # DEV end
 
-ALT_RUN_NAME="katmai.20251103b"
-
-RUN_NAME=$ALT_RUN_NAME
-
 DAT="$OUTD/$RUN_NAME.rawstat.gz"
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"

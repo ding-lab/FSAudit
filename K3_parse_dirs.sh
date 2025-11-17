@@ -12,16 +12,13 @@ VOLS="/home/mwyczalk_test"
 
 ##### CMD
 
-ALT_RUN_NAME="katmai.20251103b"
-RUN_NAME=$ALT_RUN_NAME
-
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
 # DEV
-RUN_NAME="DEV-150"
-DIRLIST="/home/mwyczalk_test/Projects/DataTracking/FSAudit/katmai.20251103/dev-data/dat/${RUN_NAME}.dirlist.tsv.gz"
-FILELIST="/home/mwyczalk_test/Projects/DataTracking/FSAudit/katmai.20251103/dev-data/dat/${RUN_NAME}.filelist.tsv.gz"
+#RUN_NAME="DEV-150"
+#DIRLIST="/home/mwyczalk_test/Projects/DataTracking/FSAudit/katmai.20251103/dev-data/dat/${RUN_NAME}.dirlist.tsv.gz"
+#FILELIST="/home/mwyczalk_test/Projects/DataTracking/FSAudit/katmai.20251103/dev-data/dat/${RUN_NAME}.filelist.tsv.gz"
 # /DEV
 
 # writes dat/$RUN_NAME/$RUN_NAME.dirmap3.tsv.gz
@@ -37,8 +34,6 @@ CMD="python3 $PY $ROOT -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT "
 
 >&2 echo CMD = $CMD
 #eval $CMD
-
-exit
 
 ### docker.  
 # https://github.com/ding-lab/WUDocker.git

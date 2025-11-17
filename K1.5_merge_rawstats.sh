@@ -4,9 +4,9 @@ source config.sh
 # then, add header from one file
 # file_name   file_type   file_size   owner_name  time_birth  time_access time_mod    hard_links
 
-OUT="$OUTD/katmai.20251103b.rawstat.gz"
+OUT="$OUTD/${RUN_NAME}.rawstat.gz"
 
->&2 echo Reading $OUTD/dat/*.rawstat.gz
+>&2 echo Reading $OUTD/raw/*.rawstat.gz
 date
 >&2 echo Writing $OUT
 
