@@ -12,9 +12,6 @@
 
 source config.sh
 
-ALT_RUN_NAME="katmai.20251103b"
-RUN_NAME=$ALT_RUN_NAME
-
 function filter_dirmap {
     DAT=$1
     OUT=$2
