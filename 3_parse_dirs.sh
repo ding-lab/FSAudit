@@ -27,13 +27,16 @@ mkdir -p "$OUTD/dirmap"
 OUT="$OUTD/dirmap/$RUN_NAME.dirmap3.tsv.gz"
 OUT_OWNER="$OUTD/$RUN_NAME.ownerlist.tsv"
 
-CMD="python3 src/make_dir_map_tree.py -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT "
+ROOT="-R storage1"
+
+CMD="python3 src/make_dir_map_tree.py -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT $ROOT"
 
 >&2 echo CMD = $CMD
 
+
 ### BSUB
 
-#bash $DOCKER $ARGS -r -M compute1 -I $IMAGE -c "$CMD" $VOLS
+bash $DOCKER $ARGS -r -M compute1 -I $IMAGE -c "$CMD" $VOLS
 
 # for testing, no CMD run
-bash $DOCKER $ARGS -r -M compute1 -I $IMAGE $VOLS
+#bash $DOCKER $ARGS -r -M compute1 -I $IMAGE $VOLS
