@@ -9,11 +9,10 @@
 # Last, prepare a tar.gz of the HTML structure
 
 # This assumes existence of dirtree in path
+# On RIS, run on compute1
+# on lab cluster, run on katmai
 
 source config.sh
-
-ALT_RUN_NAME="katmai.20251103b"
-RUN_NAME=$ALT_RUN_NAME
 
 function filter_dirmap {
     DAT=$1
