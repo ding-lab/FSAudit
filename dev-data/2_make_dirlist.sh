@@ -1,8 +1,9 @@
-RUN_NAME="DEV-150"
-FLZ="dat/${RUN_NAME}.filelist.tsv.gz"
+RUN_NAME="DEV-1000"
+OUTD="../dev-dat"
+FLZ="$OUTD/filelist-1000.tsv.gz"
 
-OUT="dat/${RUN_NAME}.dirlist.tsv"
-TMP="dat/tmp.tsv"
+OUT="$OUTD/${RUN_NAME}.dirlist.tsv"
+TMP="$OUTD/tmp.tsv"
 rm -f $TMP
 
 

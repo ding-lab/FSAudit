@@ -7,9 +7,9 @@ source config.sh
 #DAT="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output/katmai.20251103/dev-data/dev100.rawstat.gz"
 # DEV end
 
-DAT="$OUTD/$RUN_NAME.rawstat.gz"
+#DAT="$OUTD/$RUN_NAME.rawstat.gz"
+RAWSTAT="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20251124/dinglab.20251124.rawstat.gz"
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
-FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
 
 ZCAT="zcat" # for mac, this should be gzcat
 
@@ -24,7 +24,7 @@ ZCAT="zcat" # for mac, this should be gzcat
 #     8  hard_links  1
 
 >&2 date
->&2 echo Reading $DAT
+>&2 echo Reading $RAWSTAT
 >&2 echo Writing to $DIRLIST
 
 # note that in some cases where filenames have weird characters (tab, newline), we run into problems downstream.  This can be filtered out by requiring that the
@@ -33,20 +33,7 @@ ZCAT="zcat" # for mac, this should be gzcat
 #     1	file_name	/rdcw/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20230427.SW_vs_TD/dat/call-rescuevaffilter_pindel/rescuevaffilter.cwl
 #     4	owner_name	m.wyczalkowski
 #     7	time_mod	2023-02-01 18:11:36.000000000 -0600
-#$ZCAT $DAT | awk 'BEGIN{FS="\t";OFS="\t"}{if ($2 == "directory" && $1 ~ /^\// ) print $1,$4,$7}' | gzip > $DIRLIST
-#printf "file_name\ttowner_name\ttime_mod\n" > $OUT
-cat <(printf "file_name\ttowner_name\ttime_mod\n") <($ZCAT $DAT | awk 'BEGIN{FS="\t";OFS="\t"}{if ($2 == "directory" && $1 ~ /^\// ) print $1,$4,$7}') | gzip > $DIRLIST
+cat <(printf "file_name\ttowner_name\ttime_mod\n") <($ZCAT $RAWSTAT | awk 'BEGIN{FS="\t";OFS="\t"}{if ($2 == "directory" && $1 ~ /^\// ) print $1,$4,$7}') | gzip > $DIRLIST
 
 >&2 date
->&2 echo Writing to $FILELIST
 
-#     1	file_name	/rdcw/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20230427.SW_vs_TD/dat/call-rescuevaffilter_pindel/rescuevaffilter.cwl/b9ea6316-ce5e-401f-9ff8-dc181ed7db4d/call-somatic_vaf_filter_A/execution/rc
-#     3	file_size	2
-#     4	owner_name	m.wyczalkowski
-#     6 time_access 2025-04-02 14:32:21.316975250 -0500
-#     7	time_mod	2023-02-01 18:11:47.000000000 -0600
-#$ZCAT $DAT | awk 'BEGIN{FS="\t";OFS="\t"}{if ($2 == "regular file" && $1 ~ /^\// ) print $1,$3,$4,$6,$7}' | gzip > $FILELIST
-
-cat <(printf "file_name\tfile_size\towner_name\ttime_access\ttime_mod\n") <($ZCAT $DAT | awk 'BEGIN{FS="\t";OFS="\t"}{if ($2 == "regular file" && $1 ~ /^\// ) print $1,$3,$4,$6,$7}') | gzip > $FILELIST
-
->&2 date

@@ -62,25 +62,28 @@ def make_dirtree(fn, rootNode, appendRoot):
                 dirpath = "/" + rootNode.name + dirpath
             add_dir_to_tree(dirpath, rootNode)
 
-#     1	file_name	/rdcw/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/20230427.SW_vs_TD/dat/call-rescuevaffilter_pindel/rescuevaffilter.cwl/b9ea6316-ce5e-401f-9ff8-dc181ed7db4d/call-somatic_vaf_filter_A/execution/rc
-#     3	file_size	2
-#     4	owner_name	m.wyczalkowski
-#     5	time_mod	2023-02-01 18:11:47.000000000 -0600
-def parse_files(fn, rootNode, appendRoot, by_owner=False):
+# updated for 20251203 version of filelist
+# file_name   file_size   owner_name  time_mod    md5 tag
+def parse_files(fn, rootNode, appendRoot, by_owner, exclude_primary):
     resolver = anytree.Resolver()
     walker = anytree.Walker()
     with gzip.open(fn, mode='rt') as filelist:
         for i, line in enumerate(filelist):
             if i == 0:  # skip the header line
                 continue
-#            eprint("Line %d: %s" % (i, line))
+            #eprint("Line %d: %s" % (i, line))
             try:
-                tok = line.split("\t")
-                filepath = tok[0]# .lstrip("/")
+                filepath, fs, owner_name, time_mod, md5, tag = line.split("\t")
+                tags = tag.rstrip().split(";")
+                if "primary" in tags:
+                    if exclude_primary:
+#                        eprint(f"Excluding {filepath} as primary")
+                        continue
                 if appendRoot:
                     filepath = "/" + rootNode.name + filepath
-                filesize = int(tok[1])
-                owner_name = tok[2] if by_owner else None
+                filesize = int(fs)
+                if not by_owner:
+                    owner_name = None
 
                 add_file_to_tree(filepath, filesize, owner_name, rootNode, resolver, walker)
             except IndexError: # this happens for malformed filenames which contain newlines or tabs.  Just ignore them
@@ -157,6 +160,7 @@ def main():
     parser.add_option("-f", dest="filelist", help="List of files")
     parser.add_option("-o", dest="outfn", default="stdout", help="Output filename")
     parser.add_option("-u", dest="by_owner", action="store_true", help="Retain statistics for per-user dirmaps, and write them out ")
+    parser.add_option("-p", dest="exclude_primary", action="store_true", help="Exclude files which contain a \"primary\" tag")
     parser.add_option("-U", dest="ownerlist", help="Generate a summary list of files and disk use per user and write to this file")
     parser.add_option("-R", dest="root_node", default="rdcw", help="Root node of the filesystem")
     parser.add_option("-r", dest="append_root", action="store_true", help="Add root_node as prefix to all paths")
@@ -177,7 +181,7 @@ def main():
     make_dirtree(options.dirlist, rootNode, options.append_root)
 
     eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), options.filelist))
-    parse_files(options.filelist, rootNode, options.append_root, options.by_owner)
+    parse_files(options.filelist, rootNode, options.append_root, options.by_owner, options.exclude_primary)
 
     rootNode.dirsize = rootNode.children[0].dirsize
     rootNode.dirsize_user = rootNode.children[0].dirsize_user
