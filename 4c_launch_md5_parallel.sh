@@ -5,14 +5,11 @@
 
 source config.sh
 
-ALT_RUN_NAME="katmai.20251103b"
-RUN_NAME=$ALT_RUN_NAME
-
 LIST="$OUTD/${RUN_NAME}.md5-worklist.tsv"
 OUT="$OUTD/${RUN_NAME}.md5-raw.txt"
 LOG="logs/${RUN_NAME}.md5-raw.log"
 
-N_PARALLEL=10
+N_PARALLEL=5
 
 >&2 echo Reading $LIST
 >&2 echo Writing $OUT

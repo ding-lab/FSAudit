@@ -1,9 +1,7 @@
 source config.sh
 
-ALT_RUN_NAME="katmai.20251103b"
-RUN_NAME=$ALT_RUN_NAME
-
-FILELIST="$OUTD/${RUN_NAME}.filelist.tsv.gz"
+#FILELIST="$OUTD/${RUN_NAME}.filelist.tsv.gz"
+FILELIST="dev-data/dat/BIG100.filelist.tsv.gz"
 
 if [ ! -e $PAST_MD5 ]; then
     >&2 echo ERROR: PAST_MD5 $PAST_MD5 does not exist
