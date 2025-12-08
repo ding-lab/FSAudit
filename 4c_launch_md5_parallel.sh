@@ -1,15 +1,18 @@
 # Launch md5 calculations on lab cluster
 # uses xargs -P for parallelization
 
-# Suggest running this as root in tmux
+# on katmai suggest running this as root in tmux
 
 source config.sh
 
-LIST="$OUTD/${RUN_NAME}.md5-worklist.tsv"
+#LIST="$OUTD/${RUN_NAME}.md5-worklist.tsv"
+LIST="dev-dat/worklist.dat"
 OUT="$OUTD/${RUN_NAME}.md5-raw.txt"
 LOG="logs/${RUN_NAME}.md5-raw.log"
 
-N_PARALLEL=5
+mkdir -p logs
+
+N_PARALLEL=10
 
 >&2 echo Reading $LIST
 >&2 echo Writing $OUT
@@ -17,7 +20,7 @@ N_PARALLEL=5
 
 date
 
-cat $LIST | tail -n +2 | cut -f 1 | xargs -I "{}" -n 1 -P $N_PARALLEL md5sum "{}" > $OUT 2> $LOG
+cat $LIST | cut -f 1 | xargs -I "{}" -n 1 -P $N_PARALLEL md5sum "{}" > $OUT 2> $LOG
 
 date
 

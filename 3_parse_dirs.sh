@@ -19,7 +19,7 @@ VOLS="/home/m.wyczalkowski /storage1/fs1/m.wyczalkowski/Active/ProjectStorage"
 ##### CMD
 
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
-FILELIST="$OUTD/$RUN_NAME.filelist.tsv.gz"
+FILELIST="$OUTD/$RUN_NAME.filelistA.tsv.gz" # the A indicates that no new md5s have yet been calculated
 
 #DIRLIST="dev-dat/DEV-1000.dirlist.tsv.gz"
 #FILELIST="dev-dat/filelist-1000.tsv.gz"
