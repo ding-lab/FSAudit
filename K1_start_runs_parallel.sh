@@ -3,20 +3,22 @@ source config.sh
 
 NCPU=10
 
-mkdir -p $OUTD
 
-#OUTFN="$OUTD/$RUN_NAME.rawstat.gz"
 LOGD="$OUTD/log"
-DATD="$OUTD/dat"
+DATD="$OUTD/raw"
+mkdir -p $LOGD
+mkdir -p $DATD
 
-VL="../VolumeList/VolumeList-C2.dat"  # C is most current list of 20251103
+VL="../VolumeList/VolumeList-C2.dat"
 
->&2 echo Finding all files in $VOL_PATH
->&2 echo Writing to $OUTFN
+>&2 echo Finding all files in $VL
+>&2 echo Writing to $OUTD
 
 BIN="bash src/parallel_stat_fs.sh"
 CMD="$BIN $@ -J $NCPU -l $LOGD -t $DATD -I $VL "
 
 >&2 echo CMD= $CMD
-eval $CMD
+>&2 echo Does this have to be run as sudo?
+#eval $CMD
+
 
