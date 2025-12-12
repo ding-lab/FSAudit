@@ -21,10 +21,6 @@ VOLS="/home/m.wyczalkowski /storage1/fs1/m.wyczalkowski/Active/ProjectStorage"
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 FILELIST="$OUTD/$RUN_NAME.filelistA.tsv.gz" # the A indicates that no new md5s have yet been calculated
 
-#DIRLIST="dev-dat/DEV-1000.dirlist.tsv.gz"
-#FILELIST="dev-dat/filelist-1000.tsv.gz"
-#FILELIST="dev-dat/filelist-short-primary.tsv.gz"
-
 # writes dat/$RUN_NAME/$RUN_NAME.dirmap3.tsv.gz
 # also writes out dat/$RUN_NAME/$RUN_NAME.dirmap3-USER.tsv.gz files
 mkdir -p "$OUTD/dirmap"
@@ -33,13 +29,14 @@ OUT_OWNER="$OUTD/$RUN_NAME.ownerlist.tsv"
 
 ROOT="-R storage1"
 
-EXCLUDE_PRIMARY="-p"
+# do not always exclude primary.  More often than not, we want to know what primary is
+#EXCLUDE_PRIMARY="-p"
 
 CMD="python3 src/make_dir_map_tree.py $EXCLUDE_PRIMARY -u -U $OUT_OWNER -e $DIRLIST -f $FILELIST -o $OUT $ROOT"
 
 >&2 echo CMD = $CMD
 
-#eval $CMD
+eval $CMD
 
 
 ### BSUB

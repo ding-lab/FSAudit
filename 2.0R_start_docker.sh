@@ -7,7 +7,7 @@ BIN="WUDocker/start_docker.sh"
 # IMAGE="python:3.12-slim-bookworm"
 IMAGE="mwyczalkowski/python3-util:20250130"
 
-# ask for 16Gb of memory
+# ask for 16Gb or 32Gb of memory for step XXX
 ARGS="-m 32"
 
 VOLS="/home/m.wyczalkowski /storage1/fs1/m.wyczalkowski/Active/ProjectStorage"

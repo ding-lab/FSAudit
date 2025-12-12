@@ -1,14 +1,7 @@
 source config.sh
 
+RAWSTAT="$OUTD/$RUN_NAME.rawstat.gz"  # this is typical
 
-# DEV Start
-#echo DEVELOPMENT DATA
-#RUN_NAME="dev100"  # normally this is defined in config.sh
-#DAT="/home/mwyczalk_test/Projects/DataTracking/FSAudit/FSAudit2025/output/katmai.20251103/dev-data/dev100.rawstat.gz"
-# DEV end
-
-#DAT="$OUTD/$RUN_NAME.rawstat.gz"
-RAWSTAT="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20251124/dinglab.20251124.rawstat.gz"
 DIRLIST="$OUTD/$RUN_NAME.dirlist.tsv.gz"
 
 ZCAT="zcat" # for mac, this should be gzcat

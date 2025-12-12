@@ -53,6 +53,7 @@ def process_rawstat(rawstat_fn, cached_md5, primary_list):
             tags = []
             md5 = "."
             if file_name in cached_md5:
+#                eprint(f"DEBUG: cached md5  found for {file_name}")
                 md5 = cached_md5[file_name]
 
             if int(file_size) > default_large_size:
@@ -75,9 +76,7 @@ def process_rawstat(rawstat_fn, cached_md5, primary_list):
             
 # cached_fn is assumed to be direct output from `md5sum` command, with a 32-character md5 hash, followed by two space,
 # then the complete path
-# if rdcw_swap = true, cached paths starting with "/rdcw" are replaced with "/storage1"
-#   this may be necessary due to a weirdness in normalizing paths on storage1
-def get_cached_md5(cached_fn, rdcw_swap=False):
+def get_cached_md5(cached_fn, rdcw_swap):
     cached = {}
     with open(cached_fn, mode='rt') as cached_f:
         for i, line in enumerate(cached_f):
@@ -87,6 +86,40 @@ def get_cached_md5(cached_fn, rdcw_swap=False):
                 if file_name.startswith("/rdcw"):
                     file_name = file_name.replace("/rdcw", "/storage1")
             cached[file_name] = md5
+    return cached
+
+# we are transitioning from an old school filelist format to a new one.
+# below is old school, with no header and no tag column
+def get_md5_filelist(filelist_gz, rdcw_swap):
+    cached = {}
+
+    with gzip.open(filelist_gz, mode='rt') as filelist:
+        for i, line in enumerate(filelist):
+#            if i == 0:  # skip the header line
+#                continue
+#            eprint("Line %d: %s" % (i, line))
+#                file_name, file_type, file_size, owner_name, time_birth, time_access, time_mod, hard_links = line.split("\t")
+            file_name, file_size, owner_name, time_access, time_mod, md5 = line.split("\t")
+            if rdcw_swap:
+                if file_name.startswith("/rdcw"):
+                    file_name = file_name.replace("/rdcw", "/storage1")
+            cached[file_name] = md5.rstrip()
+    return cached
+
+# if rdcw_swap = true, cached paths starting with "/rdcw" are replaced with "/storage1"
+#   this may be necessary due to a weirdness in normalizing paths on storage1
+def get_md5(cached_md5, filelist_gz, rdcw_swap=False):
+
+    # provide multiple ways of reading in cached md5: from output of `md5run` and from a previous filelist which has md5 information
+    cachedA, cachedB = {}, {}
+    if cached_md5:
+        eprint(f"Reading md5s from md5sum output {args.cached_md5}")
+        cachedA = get_cached_md5(args.cached_md5, rdcw_swap)
+    if filelist_gz:
+        eprint(f"Reading md5s from filelist {args.filelist_gz}")
+        cachedB = get_md5_filelist(args.filelist_gz, rdcw_swap)
+    # https://stackoverflow.com/questions/38987/how-do-i-merge-two-dictionaries-in-a-single-expression-in-python
+    cached = {**cachedA, **cachedB}
     return cached
 
 def get_primary(primary_fn):
@@ -103,21 +136,20 @@ if __name__ == "__main__":
     default_minsize = 1024**3    # 1gb 
     parser = argparse.ArgumentParser(description="Create a filelist from a rawstat file")
     parser.add_argument("-d", "--debug", action="store_true", help="Print debugging information to stderr")
-    parser.add_argument("-m", dest="cached_md5", help="Input cached md5 list")
+    parser.add_argument("-m", dest="cached_md5", help="Provide md5 from output of `md5sum` ")
+    parser.add_argument("-M", dest="filelist_gz", help="Provide md5 in a filelist gz file ")
     parser.add_argument("-p", dest="primary", help="Input list of primary data")
 #    parser.add_argument("-o", "--output", dest="outfn", help="Output filelist ")
     parser.add_argument(dest="rawstat", help="Input rawstat file")
+    parser.add_argument("-s", "--rdcw_swap", action="store_true", help="cached md5 paths starting with \'/rdcw\' are replaced with \'/storage1\'")
 
     args = parser.parse_args()
 
-    if args.cached_md5:
-        eprint(f"Reading cached md5s {args.cached_md5}")
-        cached = get_cached_md5(args.cached_md5, True)
-    else:
-        cached = {}
+    cached = get_md5(args.cached_md5, args.filelist_gz, args.rdcw_swap)
+    
 
     if args.primary:    
-        eprint(f"Reading parent list {args.primary}")
+        eprint(f"Reading primary list {args.primary}")
         primary = get_primary(args.primary)
     else:
         primary = []

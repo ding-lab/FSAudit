@@ -5,8 +5,8 @@
 
 source config.sh
 
-#LIST="$OUTD/${RUN_NAME}.md5-worklist.tsv"
-LIST="dev-dat/worklist.dat"
+LIST="$OUTD/${RUN_NAME}.md5-worklist.tsv"
+#LIST="dev-dat/dev-worklist.tsv"     # assuming path is first column, tab delimited
 OUT="$OUTD/${RUN_NAME}.md5-raw.txt"
 LOG="logs/${RUN_NAME}.md5-raw.log"
 
