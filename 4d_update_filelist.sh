@@ -18,4 +18,4 @@ date
 eval $CMD
 
 date
->&2 echo Written to $OUT
+>&2 echo Written to $FL_NEW

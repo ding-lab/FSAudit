@@ -39,6 +39,7 @@ default_large_size = 1024**3    # 1gb
 # prints out filestat lines
 def process_rawstat(rawstat_fn, cached_md5, primary_list):
     print(f"file_name\tfile_size\towner_name\ttime_mod\tmd5\ttag")
+    cached_count, large_count = 0, 0
     with gzip.open(rawstat_fn, mode='rt') as rawstat:
         for i, line in enumerate(rawstat):
             if i == 0:  # skip the header line
@@ -55,10 +56,12 @@ def process_rawstat(rawstat_fn, cached_md5, primary_list):
             if file_name in cached_md5:
 #                eprint(f"DEBUG: cached md5  found for {file_name}")
                 md5 = cached_md5[file_name]
+                cached_count += 1
 
             if int(file_size) > default_large_size:
 #                eprint("DEBUG: large size")
                 tags.append("large")
+                large_count += 1
             
             file_path = Path(file_name)
             for p in file_path.parents:
@@ -72,6 +75,7 @@ def process_rawstat(rawstat_fn, cached_md5, primary_list):
                 tag_string = ""
 
             print(f"{file_name}\t{file_size}\t{owner_name}\t{time_mod}\t{md5}\t{tag_string}")
+    eprint(f"Found {cached_count} cached md5s out of {large_count} large files")
 
             
 # cached_fn is assumed to be direct output from `md5sum` command, with a 32-character md5 hash, followed by two space,
@@ -89,17 +93,23 @@ def get_cached_md5(cached_fn, rdcw_swap):
     return cached
 
 # we are transitioning from an old school filelist format to a new one.
-# below is old school, with no header and no tag column
+# old school, with no header and no tag column
+# new: header line, has tag column
+# Create a hash cached[filename] = md5 for those filenames which have an md5
 def get_md5_filelist(filelist_gz, rdcw_swap):
     cached = {}
 
     with gzip.open(filelist_gz, mode='rt') as filelist:
         for i, line in enumerate(filelist):
-#            if i == 0:  # skip the header line
-#                continue
+            if i == 0:  # skip the header line
+                continue
 #            eprint("Line %d: %s" % (i, line))
-#                file_name, file_type, file_size, owner_name, time_birth, time_access, time_mod, hard_links = line.split("\t")
-            file_name, file_size, owner_name, time_access, time_mod, md5 = line.split("\t")
+            if len(line) == 1:      # skip blank lines
+                continue
+#            file_name, file_size, owner_name, time_access, time_mod, md5 = line.split("\t")
+            file_name, file_size, owner_name, time_mod, md5, tag = line.split("\t")
+            if md5 == ".":
+                continue
             if rdcw_swap:
                 if file_name.startswith("/rdcw"):
                     file_name = file_name.replace("/rdcw", "/storage1")

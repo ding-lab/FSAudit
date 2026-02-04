@@ -38,12 +38,13 @@ def process_filelist(filelist_fn, cached_md5):
 #            eprint("Line %d: %s" % (i, line))
             try:
                 file_name, file_size, owner_name, time_mod, md5, tag = line.split("\t")
+                tag = tag.rstrip()
             except ValueError:
                 eprint("Skipping malformed line %d: %s" % (i, line))
 
             if file_name in cached_md5:
                 md5 = cached_md5[file_name]
-                eprint(f"Adding {file_name} : {md5}")
+#                eprint(f"Adding {file_name} : {md5}")
 
             print(f"{file_name}\t{file_size}\t{owner_name}\t{time_mod}\t{md5}\t{tag}")
 
