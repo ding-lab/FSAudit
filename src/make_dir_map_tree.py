@@ -32,10 +32,13 @@ def add_dir_to_tree(dirpath, root):
 def add_file_to_tree(filepath, filesize, owner_name, root, resolver, walker):
 # use Resolver to get leaf directory
     dirpath = os.path.dirname(filepath)
-#    eprint("DEBUG: path, dirpath, size = %s, %s, %d" % (filepath, dirpath, filesize))
-#    eprint("DEBUG: root = %s" % root)
-    leaf = resolver.get(root, dirpath)
-#    eprint("DEBUG: leaf = %s" % leaf)
+    try:
+        leaf = resolver.get(root, dirpath)
+    except anytree.resolver.ResolverError:  
+        # this can happen for several reasons, though most invalid filepaths should be caught upstream
+        # possibly, may need to run this with create a root node if they are not all the same
+        eprint("ERROR: path, dirpath, size, root = %s, %s, %d, %s" % (filepath, dirpath, filesize, root))
+        raise
 
     # https://anytree.readthedocs.io/en/stable/api/anytree.walker.html
     for n in walker.walk(root, leaf)[2]:
@@ -74,6 +77,10 @@ def parse_files(fn, rootNode, appendRoot, by_owner, exclude_primary):
             #eprint("Line %d: %s" % (i, line))
             try:
                 filepath, fs, owner_name, time_mod, md5, tag = line.split("\t")
+                # Require that filepath begins with "/". If not, it is likely a malformed line.  Ignore this line and complain
+                if not filepath.startswith('/'):
+                    eprint(f"Skipping malformed filepath {filepath} line {i+1} file {fn}")
+                    continue
                 tags = tag.rstrip().split(";")
                 if "primary" in tags:
                     if exclude_primary:

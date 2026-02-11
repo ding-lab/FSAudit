@@ -1,8 +1,6 @@
 # Print out dirlist for a given filename
 import argparse
 
-f="/rdcw/fs1/dinglab/Active/Projects/TCGA-TGCT/Primary/wxs/44421b45-a0db-4525-8c4e-c6aff0398cad/logs/80a6e8b4-9a1d-470c-8529-e21151a864bc_wxs_gdc_realn.bam.parcel"
-
 def print_parent_dirs(f):
     t=f.split(sep="/")
     out=[]  # this is the list of parent paths
