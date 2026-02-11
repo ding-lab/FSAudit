@@ -1,11 +1,10 @@
-RUN_NAME="DEV-1000"
-OUTD="../dev-dat"
-FLZ="$OUTD/filelist-1000.tsv.gz"
+source ../config.sh
+DEV_RUN_NAME="DEV-100"
 
-OUT="$OUTD/${RUN_NAME}.dirlist.tsv"
+FILELIST="$OUTD/${DEV_RUN_NAME}.filelistA.tsv"
+DIRLIST="$OUTD/${DEV_RUN_NAME}.dirlist.tsv"
+
 TMP="$OUTD/tmp.tsv"
-rm -f $TMP
-
 
 while read L; do
   F=$(echo "$L" | cut -f 1)
@@ -17,10 +16,11 @@ while read L; do
 
   python3 ../src/fake_dirlist.py "$F" >> $TMP
 
-done < <(zcat $FLZ)
+done < <(zcat $FILELIST)
 
-printf "file_name\ttowner_name\ttime_mod\n" > $OUT
-sort -u $TMP >> $OUT
+printf "file_name\ttowner_name\ttime_mod\n" > $DIRLIST
+sort -u $TMP >> $DIRLIST
+rm -f $TMP
 
-echo Written to $OUT
-gzip -vf $OUT
+echo Written to $DIRLIST
+gzip -vf $DIRLIST
