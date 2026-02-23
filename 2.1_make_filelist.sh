@@ -12,13 +12,14 @@ source config.sh
 #       list of directory or file paths which indicate which files are marked as excluded.  Not yet implemented
 
 # storage1
-# PRIMARY="config-dat/primary_list_storage1.tsv"
+ PRIMARY="config-dat/primary_list_storage1.tsv"
 # -s: rdcw_swap.  Converts leading /rdcw to /storage1 to account for ris weirdness.  Typically necessary on compute1
-# ARGS="-s"
+ ARGS="-s"
+PAST_MD5_FL="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20251208/dinglab.20251208.filelistB.tsv.gz"
 
 # katmai
 # https://docs.google.com/spreadsheets/d/1nxwen1cgVcBBi09b9rjxH-29FiGcaRe6ZXkKF0wVMCo/edit?gid=0#gid=0
-PRIMARY="dat/primary-katmai-list.dat"
+#PRIMARY="dat/primary-katmai-list.dat"
 
 RAWSTAT="$OUTD/$RUN_NAME.rawstat.gz"  # this is typical
 #>&2 echo DEV rawstat
@@ -37,8 +38,8 @@ OUT="$OUTD/$RUN_NAME.filelistA.tsv.gz"
 # -m: Provide md5 from output of `md5sum` 
 # -M: Provide md5 in a filelist gz file 
 
-CMD="python3 src/make_filelist.py $ARGS -m $PAST_MD5_RAW -p $PRIMARY $RAWSTAT | gzip > $OUT"
-#CMD="python3 src/make_filelist.py $ARGS -M $PAST_MD5_FL -p $PRIMARY $RAWSTAT | gzip > $OUT"
+#CMD="python3 src/make_filelist.py $ARGS -m $PAST_MD5_RAW -p $PRIMARY $RAWSTAT | gzip > $OUT"
+CMD="python3 src/make_filelist.py $ARGS -M $PAST_MD5_FL -p $PRIMARY $RAWSTAT | gzip > $OUT"
 
 date
 echo $CMD
