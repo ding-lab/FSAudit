@@ -4,6 +4,9 @@
 
 # We will write all directories and their size, calculated as the size of all files under them
 # Current implementation builds an internal directory tree structure then loops over all files
+# We also impelment a delta filelist, meant to be a filelist generated at a previous time.  If
+# this delta filelist exists, all files in it are subtracted from the respective directories,
+# providing a "delta" filesize indicating which directories have grown
 
 import sys, os, gzip, math, datetime
 
@@ -29,16 +32,20 @@ def add_dir_to_tree(dirpath, root):
         parent = nd            
 
 # keep per-owner statistics only if owner_name is specified
-def add_file_to_tree(filepath, filesize, owner_name, root, resolver, walker):
+def add_file_to_tree(filepath, filesize, owner_name, root, resolver, walker, is_delta=False):
 # use Resolver to get leaf directory
     dirpath = os.path.dirname(filepath)
     try:
         leaf = resolver.get(root, dirpath)
     except anytree.resolver.ResolverError:  
         # this can happen for several reasons, though most invalid filepaths should be caught upstream
-        # possibly, may need to run this with create a root node if they are not all the same
-        eprint("ERROR: path, dirpath, size, root = %s, %s, %d, %s" % (filepath, dirpath, filesize, root))
-        raise
+        # if this comes up, may need to run this with create a root node if they are not all the same
+        # If we are doing a delta analysis then it may be common for the directory not to exist - just ignore it
+        if is_delta:
+            return
+        else:
+            eprint("ERROR: path, dirpath, size, root = %s, %s, %d, %s" % (filepath, dirpath, filesize, root))
+            raise
 
     # https://anytree.readthedocs.io/en/stable/api/anytree.walker.html
     for n in walker.walk(root, leaf)[2]:
@@ -67,9 +74,17 @@ def make_dirtree(fn, rootNode, appendRoot):
 
 # updated for 20251203 version of filelist
 # file_name   file_size   owner_name  time_mod    md5 tag
-def parse_files(fn, rootNode, appendRoot, by_owner, exclude_primary):
+def parse_files(fn, delta_fn, rootNode, appendRoot, by_owner, exclude_primary):
     resolver = anytree.Resolver()
     walker = anytree.Walker()
+
+    eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), fn))
+    process_filelist(fn, rootNode, resolver, walker, appendRoot, by_owner, exclude_primary, False)
+    if delta_fn:
+        eprint("[%s] Parsing delta files in %s" % (datetime.datetime.now(), delta_fn))
+        process_filelist(delta_fn, rootNode, resolver, walker, appendRoot, by_owner, exclude_primary, True)
+
+def process_filelist(fn, rootNode, resolver, walker, appendRoot, by_owner, exclude_primary, is_delta):
     with gzip.open(fn, mode='rt') as filelist:
         for i, line in enumerate(filelist):
             if i == 0:  # skip the header line
@@ -79,7 +94,7 @@ def parse_files(fn, rootNode, appendRoot, by_owner, exclude_primary):
                 filepath, fs, owner_name, time_mod, md5, tag = line.split("\t")
                 # Require that filepath begins with "/". If not, it is likely a malformed line.  Ignore this line and complain
                 if not filepath.startswith('/'):
-                    eprint(f"Skipping malformed filepath {filepath} line {i+1} file {fn}")
+                    eprint(f"Skipping malformed filepath {filepath} line {i+1} file {fn}\n\tLine: {line}")
                     continue
                 tags = tag.rstrip().split(";")
                 if "primary" in tags:
@@ -89,22 +104,29 @@ def parse_files(fn, rootNode, appendRoot, by_owner, exclude_primary):
                 if appendRoot:
                     filepath = "/" + rootNode.name + filepath
                 filesize = int(fs)
+                if is_delta:
+                    filesize = -filesize
                 if not by_owner:
                     owner_name = None
 
-                add_file_to_tree(filepath, filesize, owner_name, rootNode, resolver, walker)
+                add_file_to_tree(filepath, filesize, owner_name, rootNode, resolver, walker, is_delta)  # the is_delta is for debugging, so we print verbosely during delta processing
             except IndexError: # this happens for malformed filenames which contain newlines or tabs.  Just ignore them
                 eprint("Error caught in %s line %d\n\t%s\nContinuing" % (fn, i, line))
 
 # https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
-def convert_size(size_bytes, ndigits=2):
+#def convert_size(size_bytes, ndigits=2):
+def convert_size(size_bytes, ndigits=5):  # for debugging
    if size_bytes == 0:
        return "0B"
+   size_bytes_abs = abs(size_bytes)
    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-   i = int(math.floor(math.log(size_bytes, 1024)))
+   i = int(math.floor(math.log(size_bytes_abs, 1024)))
    p = math.pow(1024, i)
-   s = round(size_bytes / p, ndigits)  # None for int
-   return "%s %s" % (s, size_name[i])
+   s = round(size_bytes_abs / p, ndigits)  # None for int
+   if size_bytes < 0:
+       return "-%s %s" % (s, size_name[i])
+   else:
+       return "%s %s" % (s, size_name[i])
 
 def write_dirtree_by_owner(fn, rootNode):
     # Optionally, write it for all owners individually
@@ -165,6 +187,7 @@ def main():
     parser = OptionParser(usage_text, version="$Revision: 1.2 $")
     parser.add_option("-e", dest="dirlist", help="List of directories")
     parser.add_option("-f", dest="filelist", help="List of files")
+    parser.add_option("-F", dest="delta_filelist", help="List of files to subtract from filelist")
     parser.add_option("-o", dest="outfn", default="stdout", help="Output filename")
     parser.add_option("-u", dest="by_owner", action="store_true", help="Retain statistics for per-user dirmaps, and write them out ")
     parser.add_option("-p", dest="exclude_primary", action="store_true", help="Exclude files which contain a \"primary\" tag")
@@ -187,8 +210,7 @@ def main():
     eprint("[%s] Making dirlist from %s" % (datetime.datetime.now(), options.dirlist))
     make_dirtree(options.dirlist, rootNode, options.append_root)
 
-    eprint("[%s] Parsing files in %s" % (datetime.datetime.now(), options.filelist))
-    parse_files(options.filelist, rootNode, options.append_root, options.by_owner, options.exclude_primary)
+    parse_files(options.filelist, options.delta_filelist, rootNode, options.append_root, options.by_owner, options.exclude_primary)
 
     rootNode.dirsize = rootNode.children[0].dirsize
     rootNode.dirsize_user = rootNode.children[0].dirsize_user

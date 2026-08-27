@@ -1,10 +1,14 @@
 source ../config.sh
-DEV_RUN_NAME="DEV-100"
+DEV_RUN_NAME="DEV-1K"
 
 FILELIST="$OUTD/${DEV_RUN_NAME}.filelistA.tsv"
 DIRLIST="$OUTD/${DEV_RUN_NAME}.dirlist.tsv"
 
+>&2 echo Reading $FILELIST
+
 TMP="$OUTD/tmp.tsv"
+COUNT=0
+
 
 while read L; do
   F=$(echo "$L" | cut -f 1)
@@ -12,7 +16,9 @@ while read L; do
   if [ "$F" == "file_name" ]; then
     continue
   fi
-  >&2 echo Processing $F
+
+  ((COUNT++))
+  >&2 echo $COUNT: Processing $F
 
   python3 ../src/fake_dirlist.py "$F" >> $TMP
 

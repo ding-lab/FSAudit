@@ -1,12 +1,12 @@
-DATESTAMP="20251208"
+DATESTAMP="20260527"
 
 #
 # dinglab
 #
-#PROJECT_NAME="dinglab"
-#VOL_PATH="/storage1/fs1/dinglab/Active"
-#OUTD_BASE="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit"
-# probably better to define PAST_MD5 in 2.1
+PROJECT_NAME="dinglab"
+VOL_PATH="/storage1/fs1/dinglab/Active"
+OUTD_BASE="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit"
+PAST_MD5_FL="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20260204/dinglab.20260204.filelistB-large.tsv.gz"
 
 #
 # m.wyczalkowski
@@ -19,9 +19,9 @@ DATESTAMP="20251208"
 #
 # katmai
 #
-PROJECT_NAME="katmai"
-OUTD_BASE="/home/mwyczalk_test/Projects/DataTracking/FSAudit/output"
-PAST_MD5_RAW="/home/mwyczalk_test/Projects/DataTracking/FSAudit/output/katmai.20251103/katmai.20251103-merged.md5-raw.tsv"
+#PROJECT_NAME="katmai"
+#OUTD_BASE="/home/mwyczalk_test/Projects/DataTracking/FSAudit/output"
+#PAST_MD5_RAW="/home/mwyczalk_test/Projects/DataTracking/FSAudit/output/katmai.20251103/katmai.20251103-merged.md5-raw.tsv"
 
 RUN_NAME="$PROJECT_NAME.$DATESTAMP"
 OUTD="$OUTD_BASE/${RUN_NAME}"

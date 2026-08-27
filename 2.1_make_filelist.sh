@@ -14,8 +14,9 @@ source config.sh
 # storage1
  PRIMARY="config-dat/primary_list_storage1.tsv"
 # -s: rdcw_swap.  Converts leading /rdcw to /storage1 to account for ris weirdness.  Typically necessary on compute1
- ARGS="-s"
-PAST_MD5_FL="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20251208/dinglab.20251208.filelistB.tsv.gz"
+ARGS="-s"
+# PAST_MD5_FL is defined in config.sh
+#PAST_MD5_FL="/storage1/fs1/m.wyczalkowski/Active/ProjectStorage/Analysis/FSAudit/dinglab.20251208/dinglab.20251208.filelistB.tsv.gz"
 
 # katmai
 # https://docs.google.com/spreadsheets/d/1nxwen1cgVcBBi09b9rjxH-29FiGcaRe6ZXkKF0wVMCo/edit?gid=0#gid=0
